@@ -63,7 +63,6 @@ def select_columns(dataset: pandas.DataFrame) -> pandas.DataFrame:
         if numerical_dataset.empty:
             print("The dataset does not contain numerical features.")
             return None, None
-        numerical_dataset = numerical_dataset.drop("ID number", axis=1)
         columns = numerical_dataset.columns
         return (
             numerical_dataset,
@@ -84,10 +83,13 @@ def describe(dataset_path: str):
     """
     try:
 
-        # Read the dataset.
-        entire_dataset = read_dataset(dataset_path)
-        if entire_dataset is None:
-            return None
+        if isinstance(dataset_path, str) is True:
+            # Read the dataset.
+            entire_dataset = read_dataset(dataset_path)
+            if entire_dataset is None:
+                return None
+        elif isinstance(dataset_path, pandas.DataFrame) is True:
+            entire_dataset = dataset_path
 
         # Select only the numerical columns, drop the Index.
         dataset, feature_names = select_columns(entire_dataset)

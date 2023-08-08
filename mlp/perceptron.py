@@ -1,33 +1,11 @@
 import numpy as np
-
-
-def linear(x):
-    """
-    The linear function is used as an activation function.
-    It is a linear function.
-    """
-    return x
-
-
-def sigmoid(x):
-    """
-    The sigmoid function is used as an activation function.
-    """
-    return 1 / (1 + np.exp(-x))
-
-
-def hyperboloid_tangent(x):
-    """
-    The hyperboloid tangent function is used as an activation function.
-    """
-    return np.tanh(x)
-
-
-def rectified_linear_unit(x):
-    """
-    The rectified linear unit function is used as an activation function.
-    """
-    return np.maximum(0, x)
+from activation_functions import (
+    linear,
+    step,
+    sigmoid,
+    hyperboloid_tangent,
+    rectified_linear_unit
+)
 
 
 # Decorator to check the inputs of the perceptron function.
@@ -39,6 +17,7 @@ def check_inputs(func):
             )
         elif activation_function not in [
             linear,
+            step,
             sigmoid,
             hyperboloid_tangent,
             rectified_linear_unit
@@ -68,6 +47,7 @@ def iterative_perceptron(inputs, weights, biais, activation_function):
     return output
 
 
+@check_inputs
 def perceptron(inputs, weights, biais, activation_function):
     """
     Each perceptron of the neural network has an input, a weight and a biais.
@@ -78,13 +58,14 @@ def perceptron(inputs, weights, biais, activation_function):
     The output is the sum of the inputs multiplied by the weights, plus the
     biais.
     """
-    weighted_sum = np.dot(inputs, weights) + biais
+    weighted_sum = np.dot(weights, inputs) + biais
     output = activation_function(weighted_sum)
     return output
 
 
 if __name__ == "__main__":
 
+    # One input, with a layer of 3 neurons.
     inputs = np.array([1.2, 1.3, 0.7])
 
     weights1 = np.array([3.1, 2.1, 8.7])
@@ -102,6 +83,60 @@ if __name__ == "__main__":
             perceptron(inputs, weights3, biais3, linear)
         )
         print(layer)
+    except ValueError as error:
+        print(error)
+        exit(1)
+
+    # The same result can be obtained with a matrix multiplication.
+    weights = np.array([weights1, weights2, weights3])
+    biais = np.array([biais1, biais2, biais3])
+    perceptron = np.dot(weights, inputs) + biais
+    print(perceptron)
+
+    # Now, we have more than one input. With a layer of 3 neurons.
+    inputs = np.array([
+        [1.2, 1.3, 0.7],
+        [2.1, 0.3, 1.7],
+        [0.2, 1.3, 2.7],
+        [1.2, 1.3, 0.7],
+        [2.1, 0.3, 1.7],
+        [0.2, 1.3, 2.7],
+        [1.2, 1.3, 0.7]
+    ])
+
+    weights = np.array([weights1, weights2, weights3])
+    biais = np.array([biais1, biais2, biais3])
+
+    try:
+        layer = np.dot(inputs, weights.T) + biais
+        print(layer)
+    except ValueError as error:
+        print(error)
+        exit(1)
+
+    inputs = np.array([
+        [1.2, 1.3, 0.7],
+        [2.1, 0.3, 1.7],
+        [0.2, 1.3, 2.7],
+        [1.2, 1.3, 0.7],
+        [2.1, 0.3, 1.7],
+        [0.2, 1.3, 2.7],
+        [1.2, 1.3, 0.7]
+    ])
+
+    # Now, we have more than one layer.
+    # The output of the first layer is the input of the second layer.
+    weights_l1 = np.array([weights1, weights2, weights3])
+    weights_l2 = np.array([weights3, weights2, weights1])
+
+    biais_l1 = np.array([biais1, biais2, biais3])
+    biais_l2 = np.array([biais3, biais2, biais1])
+
+    try:
+        layer_1_output = np.dot(inputs, weights_l1.T) + biais_l1
+        print(layer_1_output)
+        layer_2_output = np.dot(layer_1_output, weights_l2.T) + biais_l2
+        print(layer_1_output)
     except ValueError as error:
         print(error)
         exit(1)

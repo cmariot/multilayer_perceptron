@@ -1,13 +1,73 @@
+import argparse
 import pandas
 import numpy as np
-from layer import Layer_Dense
-from losses import Categorical_Cross_Entropy
+from losses import loss_selection
 from multi_layer_perceptron import MultiLayerPerceptron
-from metrics import Accuracy
+from layer import Dense_Layer
 
 
 def parse_args():
-    pass
+    try:
+        parser = argparse.ArgumentParser()
+
+        parser.add_argument(
+            "--layers",
+            type=int,
+            nargs="+",
+            help="Number of neurons in each layer",
+            default=[30, 24, 24, 2]
+        )
+
+        parser.add_argument(
+            "--activations",
+            type=str,
+            nargs="+",
+            help="Activation function in each layer",
+            default=["sigmoid", "sigmoid", "sigmoid", "softmax"]
+        )
+
+        parser.add_argument(
+            "--epochs",
+            type=int,
+            help="Number of epochs",
+            default=84
+        )
+
+        parser.add_argument(
+            "--loss",
+            type=str,
+            help="Loss function",
+            default="binaryCrossentropy"
+        )
+
+        parser.add_argument(
+            "--batch_size",
+            type=int,
+            help="Batch size",
+            default=8
+        )
+
+        parser.add_argument(
+            "--learning_rate",
+            type=float,
+            help="Learning rate",
+            default=10e-3
+        )
+
+        args = parser.parse_args()
+
+        return (
+            args.layers,
+            args.activations,
+            args.epochs,
+            args.loss,
+            args.batch_size,
+            args.learning_rate
+        )
+
+    except Exception as e:
+        print(e)
+        exit()
 
 
 def load_dataset(path):
@@ -45,13 +105,68 @@ def categorical_target_to_numerical(y_train, y_validation):
     )
 
 
+def create_layers_network(n_features,
+                          layers,
+                          activations,
+                          learning_rate):
+    layers_list = []
+    n_layers = len(layers)
+    for i in range(n_layers):
+        if i == 0:
+            # Create the input layer
+            layers_list.append(
+                Dense_Layer(
+                    n_inputs=n_features,
+                    n_neurons=layers[i],
+                    activation=activations[i],
+                    learning_rate=learning_rate
+                )
+            )
+
+        else:
+            # Create the hidden / output layers
+            layers_list.append(
+                Dense_Layer(
+                    n_inputs=layers[i - 1],
+                    n_neurons=layers[i],
+                    activation=activations[i],
+                    learning_rate=learning_rate
+                )
+            )
+
+        type = "Input" if i == 0 \
+            else "Hidden" if i < n_layers - 1 \
+            else "Output"
+
+        print(f"{type} layer created.\n" +
+              f"Number of neurons: {layers[i]}\n" +
+              f"Activation function: {activations[i]}\n" +
+              f"Learning rate: {learning_rate}\n")
+    return layers_list
+
+
+def get_batch(x, y, i, batch_size):
+    start = i * batch_size
+    end = (i + 1) * batch_size
+    x_batch = x[start:end]
+    y_batch = y[start:end]
+    return x_batch, y_batch
+
+
 def train():
     pass
 
 
 if __name__ == "__main__":
 
-    # args = parse_args()
+    (
+        layers,
+        activations,
+        epochs,
+        loss_name,
+        batch_size,
+        learning_rate
+    ) = parse_args()
 
     # ##################################### #
     # 1- Load the datasets,                 #
@@ -76,43 +191,65 @@ if __name__ == "__main__":
         y_train, y_validation
     )
 
-    # ##################################### #
-    # Create the default neural network :   #
-    # - Input layer                         #
-    # - Hidden layer 1                      #
-    # - Hidden layer 2                      #
-    # - Output layer                        #
-    # ##################################### #
+    print("Datasets loaded and normalized.\n" +
+          f"Number of features: {x_train_norm.shape[1]}\n" +
+          f"Number of training samples: {x_train_norm.shape[0]}\n" +
+          f"Number of validation samples: {x_validation_norm.shape[0]}\n")
+
+    # ############################# #
+    # Create the neural network :   #
+    # - Input layer                 #
+    # - Hidden layer 1              #
+    # - Hidden layer 2              #
+    # - Output layer                #
+    # ############################# #
+
+    # Create the layers list
+    layers_list = create_layers_network(
+        n_features=x_train_norm.shape[1],
+        layers=layers,
+        activations=activations,
+        learning_rate=learning_rate
+    )
 
     multilayer_perceptron = MultiLayerPerceptron(
-        input_layer=Layer_Dense(
-            n_inputs=x_train_norm.shape[1],
-            n_neurons=30,
-            activation="sigmoid"
-        )
+       layers=layers_list
     )
-    multilayer_perceptron.add_layer(
-        n_neurons=24,
-        activation="sigmoid"
-    )
-    multilayer_perceptron.add_layer(
-        n_neurons=24,
-        activation="sigmoid"
-    )
-    multilayer_perceptron.add_layer(
-        n_neurons=2,
-        activation="softmax"
-    )
+
+    loss = loss_selection(loss_name)
 
     # ##################################### #
     # Train the neural network              #
     # ##################################### #
 
-    multilayer_perceptron.fit(
-        x=x_train_norm,
-        y=y_train,
-        n_iter=1000,
-        learning_rate=0.01,
-        loss_=Categorical_Cross_Entropy(),
-        accuracy_=Accuracy()
-    )
+    for epoch in range(epochs):
+
+        n_batch = x_train_norm.shape[0] // batch_size
+
+        for i in range(n_batch):
+
+            x_batch, y_batch = get_batch(
+                x_train_norm, y_train, i, batch_size
+            )
+
+            # Forward pass
+            last_layer_output = multilayer_perceptron.forward(x_batch)
+
+            # # Calculate the loss
+            # data_loss = loss.calculate(last_layer_output, y_batch)
+
+            # # Calculate the accuracy
+            # predictions = np.argmax(last_layer_output, axis=1)
+            # accuracy = np.mean(predictions == y_batch)
+
+            # print(f"epoch: {epoch}, batch: {i}, " +
+            #       f"acc: {accuracy:.3f}, loss: {data_loss:.3f}")
+
+            # # Backward pass
+            # loss.backward(multilayer_perceptron.output, y_batch)
+            # multilayer_perceptron.backward(loss.dinputs)
+
+            # # Update the weights and the biases
+            # multilayer_perceptron.update_parameters()
+
+        # TODO: Compute metrics on the validation set

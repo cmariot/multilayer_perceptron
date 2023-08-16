@@ -1,7 +1,8 @@
 import argparse
 import pandas
 import numpy as np
-from losses import loss_selection
+from Loss.binary_cross_entropy import BinaryCrossEntropy_Loss
+from Loss.categorical_cross_entropy import CategoricalCrossEntropy_Loss
 from multi_layer_perceptron import MultiLayerPerceptron
 from layer import Dense_Layer
 
@@ -51,7 +52,7 @@ def parse_args():
             "--learning_rate",
             type=float,
             help="Learning rate",
-            default=10e-3
+            default=10e-2
         )
 
         args = parser.parse_args()
@@ -153,10 +154,6 @@ def get_batch(x, y, i, batch_size):
     return x_batch, y_batch
 
 
-def train():
-    pass
-
-
 if __name__ == "__main__":
 
     (
@@ -216,40 +213,42 @@ if __name__ == "__main__":
        layers=layers_list
     )
 
-    loss = loss_selection(loss_name)
+    loss = BinaryCrossEntropy_Loss()
 
     # ##################################### #
     # Train the neural network              #
     # ##################################### #
 
-    for epoch in range(epochs):
+    for epoch in range(epochs * batch_size):
 
-        n_batch = x_train_norm.shape[0] // batch_size
+        # n_batch = x_train_norm.shape[0] // batch_size
 
-        for i in range(n_batch):
+        # for i in range(n_batch):
 
-            x_batch, y_batch = get_batch(
-                x_train_norm, y_train, i, batch_size
-            )
+        #     x_batch, y_batch = get_batch(
+        #         x_train_norm, y_train, i, batch_size
+        #     )
 
-            # Forward pass
-            last_layer_output = multilayer_perceptron.forward(x_batch)
+        # Forward pass
+        last_layer_output = multilayer_perceptron.forward(x_train_norm)
 
-            # # Calculate the loss
-            # data_loss = loss.calculate(last_layer_output, y_batch)
+        # Compute the loss
+        data_loss = loss.calculate(last_layer_output, y_train)
 
-            # # Calculate the accuracy
-            # predictions = np.argmax(last_layer_output, axis=1)
-            # accuracy = np.mean(predictions == y_batch)
+        # Calculate the accuracy
+        predictions = np.argmax(last_layer_output, axis=1)
+        accuracy = np.mean(predictions == y_train)
 
-            # print(f"epoch: {epoch}, batch: {i}, " +
-            #       f"acc: {accuracy:.3f}, loss: {data_loss:.3f}")
+        print(f"epoch: {epoch}, " +
+              f"acc: {accuracy:.3f}, loss: {data_loss:.3f}")
 
-            # # Backward pass
-            # loss.backward(multilayer_perceptron.output, y_batch)
-            # multilayer_perceptron.backward(loss.dinputs)
+        # Compute the gradient
+        # loss.backward(last_layer_output, y_train)
 
-            # # Update the weights and the biases
-            # multilayer_perceptron.update_parameters()
+        # # Backward pass
+        # multilayer_perceptron.backward(loss.dinputs)
+
+        # # Update the weights and the biases
+        # multilayer_perceptron.update_parameters()
 
         # TODO: Compute metrics on the validation set

@@ -11,17 +11,18 @@ class MultiLayerPerceptron:
             # Compute weighted sum
             layer.forward(input)
             # Compute activation function output
-            layer.activation.forward(layer.weighted_sum)
-            input = layer.activation.output
-        return self.layers[-1].activation.output
+            layer.activation_forward()
+            input = layer.output
+        return self.layers[-1].output
 
-    def backward(self, output_error):
+    def backward(self, dvalues):
         """
         Backward propagation.
         """
         for layer in reversed(self.layers):
-            output_error = layer.backward(output_error)
-        return output_error
+            layer.activation_backward()
+            dvalues = layer.activation.dinputs
+            layer.backward(dvalues)
 
     def update_parameters(self):
         """

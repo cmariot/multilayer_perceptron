@@ -9,5 +9,4 @@ class Sigmoid_Activation:
 
     # Backward pass
     def backward(self, dvalues):
-        pass
-        # self.dinput = dvalues * (1 - self.output) * self.output
+        self.dinput = dvalues * (1 - self.output) * self.output

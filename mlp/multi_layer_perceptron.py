@@ -20,9 +20,9 @@ class MultiLayerPerceptron:
         Backward propagation.
         """
         for layer in reversed(self.layers):
-            layer.activation_backward()
-            dvalues = layer.activation.dinputs
             layer.backward(dvalues)
+            layer.activation_backward()
+            dvalues = layer.activation.dinput
 
     def update_parameters(self):
         """

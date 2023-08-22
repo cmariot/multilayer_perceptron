@@ -2,7 +2,7 @@ import argparse
 import pandas
 import numpy as np
 from Loss.binary_cross_entropy import BinaryCrossEntropy_Loss
-from Loss.categorical_cross_entropy import CategoricalCrossEntropy_Loss
+# from Loss.categorical_cross_entropy import CategoricalCrossEntropy_Loss
 from multi_layer_perceptron import MultiLayerPerceptron
 from layer import Dense_Layer
 
@@ -195,10 +195,10 @@ if __name__ == "__main__":
 
     # ############################# #
     # Create the neural network :   #
-    # - Input layer                 #
-    # - Hidden layer 1              #
-    # - Hidden layer 2              #
-    # - Output layer                #
+    # - Input layer : sigmoid       #
+    # - Hidden layer 1 : sigmoid    #
+    # - Hidden layer 2 : sigmoid    #
+    # - Output layer : softmax      #
     # ############################# #
 
     # Create the layers list
@@ -219,6 +219,8 @@ if __name__ == "__main__":
     # Train the neural network              #
     # ##################################### #
 
+    lowest_loss = 9999999
+
     for epoch in range(epochs * batch_size):
 
         # n_batch = x_train_norm.shape[0] // batch_size
@@ -229,23 +231,49 @@ if __name__ == "__main__":
         #         x_train_norm, y_train, i, batch_size
         #     )
 
+        layer_weights = []
+        layer_biases = []
+        for layer in multilayer_perceptron.layers:
+            layer_weights.append(layer.weights.copy())
+            layer.weights = 0.05 * np.random.randn(
+                layer.weights.shape[0], layer.weights.shape[1]
+            )
+            layer_biases.append(layer.biases.copy())
+            layer.biases = 0.05 * np.random.randn(
+                layer.biases.shape[0], layer.biases.shape[1]
+            )
+
         # Forward pass
         last_layer_output = multilayer_perceptron.forward(x_train_norm)
 
         # Compute the loss
         data_loss = loss.calculate(last_layer_output, y_train)
 
-        # Calculate the accuracy
-        predictions = np.argmax(last_layer_output, axis=1)
-        accuracy = np.mean(predictions == y_train)
+        if data_loss < lowest_loss:
 
-        print(f"epoch: {epoch}, " +
-              f"acc: {accuracy:.3f}, loss: {data_loss:.3f}")
+            lowest_loss = data_loss
+
+            # Get predictions
+            y_pred = np.argmax(last_layer_output, axis=1)
+
+            # Compute the accuracy
+            accuracy = np.mean(y_pred == y_train)
+
+            print(f"epoch: {epoch}, " +
+                  f"acc: {accuracy:.3f}, loss: {data_loss:.3f}")
+
+        else:
+
+            for i, layer in enumerate(multilayer_perceptron.layers):
+
+                layer.weights = layer_weights[i]
+                layer.biaises = layer_biases[i]
 
         # Compute the gradient
         # loss.backward(last_layer_output, y_train)
+        # gradients = loss.dinputs
 
-        # # Backward pass
+        # Backward pass
         # multilayer_perceptron.backward(loss.dinputs)
 
         # # Update the weights and the biases

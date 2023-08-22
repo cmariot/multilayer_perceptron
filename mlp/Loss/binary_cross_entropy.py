@@ -3,22 +3,24 @@ import numpy as np
 
 class BinaryCrossEntropy_Loss:
 
-    def calculate(self, output, y):
+    def compute(self, output, y):
+        print("binary cross entropy forward")
         loss_elem = self.forward(output, y)
-        loss = np.mean(loss_elem)
-        return loss
+        self.output = np.mean(loss_elem)
+        return self.output
 
     def forward(self, y_pred, y_true, eps=1e-15):
         y_pred_clipped = np.clip(y_pred, eps, 1 - eps)
         loss = -(y_true * np.log(y_pred_clipped) +
                  (1 - y_true) * np.log(1 - y_pred_clipped))
-        loss_elem = np.mean(loss, axis=1)
+        loss_elem = np.mean(loss, axis=-1)
         return loss_elem
 
-    def backward(self, dvalues, y_true, eps=1e-15):
+    def gradient(self, dvalues, y_true, eps=1e-15):
         samples = len(dvalues)
         outputs = len(dvalues[0])
         y_pred_clipped = np.clip(dvalues, eps, 1 - eps)
         self.dinputs = -(y_true / y_pred_clipped -
                          (1 - y_true) / (1 - y_pred_clipped)) / outputs
         self.dinputs = self.dinputs / samples
+        return self.dinputs

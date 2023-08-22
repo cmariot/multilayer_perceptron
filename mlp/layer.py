@@ -43,6 +43,7 @@ class Dense_Layer:
             exit()
 
     def forward(self, inputs):
+        print("dense layer forward")
         self.inputs = inputs
         self.weighted_sum = np.dot(inputs, self.weights) + self.biases
 

@@ -4,7 +4,8 @@ import numpy as np
 class Softmax_Activation:
 
     def forward(self, input):
-        self.input = input.copy()
+        print("softmax forward")
+        self.input = input
         exp_values = \
             np.exp(input - np.max(input, axis=1, keepdims=True))
         self.output = \
@@ -12,7 +13,6 @@ class Softmax_Activation:
 
     # Backward pass
     def backward(self, dvalues):
-        print("dvalues", dvalues)
         # Create uninitialized array
         self.dinput = np.empty_like(dvalues)
         # Enumerate outputs and gradients

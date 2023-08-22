@@ -146,12 +146,12 @@ def create_layers_network(n_features,
     return layers_list
 
 
-def get_batch(x, y, i, batch_size):
-    start = i * batch_size
-    end = (i + 1) * batch_size
-    x_batch = x[start:end]
-    y_batch = y[start:end]
-    return x_batch, y_batch
+# def get_batch(x, y, i, batch_size):
+#     start = i * batch_size
+#     end = (i + 1) * batch_size
+#     x_batch = x[start:end]
+#     y_batch = y[start:end]
+#     return x_batch, y_batch
 
 
 if __name__ == "__main__":
@@ -213,68 +213,38 @@ if __name__ == "__main__":
        layers=layers_list
     )
 
-    loss = BinaryCrossEntropy_Loss()
+    loss_function = BinaryCrossEntropy_Loss()
 
     # ##################################### #
     # Train the neural network              #
     # ##################################### #
 
-    lowest_loss = 9999999
-
     for epoch in range(epochs * batch_size):
-
-        # n_batch = x_train_norm.shape[0] // batch_size
-
-        # for i in range(n_batch):
-
-        #     x_batch, y_batch = get_batch(
-        #         x_train_norm, y_train, i, batch_size
-        #     )
-
-        layer_weights = []
-        layer_biases = []
-        for layer in multilayer_perceptron.layers:
-            layer_weights.append(layer.weights.copy())
-            layer.weights = 0.05 * np.random.randn(
-                layer.weights.shape[0], layer.weights.shape[1]
-            )
-            layer_biases.append(layer.biases.copy())
-            layer.biases = 0.05 * np.random.randn(
-                layer.biases.shape[0], layer.biases.shape[1]
-            )
 
         # Forward pass
         last_layer_output = multilayer_perceptron.forward(x_train_norm)
 
         # Compute the loss
-        data_loss = loss.calculate(last_layer_output, y_train)
+        loss = loss_function.compute(last_layer_output, y_train)
 
-        if data_loss < lowest_loss:
+        # Get predictions
+        y_pred = np.argmax(last_layer_output, axis=1)
 
-            lowest_loss = data_loss
+        # Compute the accuracy
+        accuracy = np.mean(y_pred == y_train)
 
-            # Get predictions
-            y_pred = np.argmax(last_layer_output, axis=1)
+        print(f"epoch: {epoch}, " +
+              f"acc: {accuracy:.3f}, loss: {loss:.5f}")
 
-            # Compute the accuracy
-            accuracy = np.mean(y_pred == y_train)
-
-            print(f"epoch: {epoch}, " +
-                  f"acc: {accuracy:.3f}, loss: {data_loss:.3f}")
-
-        else:
-
-            for i, layer in enumerate(multilayer_perceptron.layers):
-
-                layer.weights = layer_weights[i]
-                layer.biaises = layer_biases[i]
-
-        # Compute the gradient
-        # loss.backward(last_layer_output, y_train)
-        # gradients = loss.dinputs
-
-        # Backward pass
-        # multilayer_perceptron.backward(loss.dinputs)
+        # Backpropagation here :
+        # activation4.backward()
+        # layer4.backward()
+        # activation3.backward()
+        # layer3.backward()
+        # activation2.backward()
+        # layer2.backward()
+        # activation1.backward()
+        # layer1.backward()
 
         # # Update the weights and the biases
         # multilayer_perceptron.update_parameters()

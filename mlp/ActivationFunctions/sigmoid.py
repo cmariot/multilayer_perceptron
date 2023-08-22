@@ -8,7 +8,6 @@ class Sigmoid_Activation:
         Sigmoid activation function
         Each input is transformed into a value between 0 and 1
         """
-        print("sigmoid forward")
         self.input = input
         self.output = 1 / (1 + exp(-input))
         return self.output

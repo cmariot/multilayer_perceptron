@@ -4,7 +4,6 @@ import numpy as np
 class BinaryCrossEntropy_Loss:
 
     def compute(self, output, y):
-        print("binary cross entropy forward")
         loss_elem = self.forward(output, y)
         self.output = np.mean(loss_elem)
         return self.output

@@ -5,6 +5,7 @@ from Loss.binary_cross_entropy import BinaryCrossEntropy_Loss
 # from Loss.categorical_cross_entropy import CategoricalCrossEntropy_Loss
 from multi_layer_perceptron import MultiLayerPerceptron
 from layer import Dense_Layer
+from matplotlib import pyplot as plt
 
 
 def parse_args():
@@ -219,7 +220,9 @@ if __name__ == "__main__":
     # Train the neural network              #
     # ##################################### #
 
-    for epoch in range(epochs * batch_size):
+    losses = []
+    accuracies = []
+    for epoch in range(epochs):
 
         # Forward pass
         last_layer_output = multilayer_perceptron.forward(x_train_norm)
@@ -236,17 +239,53 @@ if __name__ == "__main__":
         print(f"epoch: {epoch}, " +
               f"acc: {accuracy:.3f}, loss: {loss:.5f}")
 
-        # Backpropagation here :
-        # activation4.backward()
-        # layer4.backward()
-        # activation3.backward()
-        # layer3.backward()
-        # activation2.backward()
-        # layer2.backward()
-        # activation1.backward()
-        # layer1.backward()
+        # Save the current loss and accuracy, used for the plot
+        losses.append(loss)
+        accuracies.append(accuracy)
+
+        # calculating the derivative of the cost with respect to some weight
+        dcost = loss_function.gradient(last_layer_output, y_train)
+
+        # Backpropagation :
+        # Output layer
+        activation4 = multilayer_perceptron.layers[3].activation.backward(dcost)
+        backward4 = multilayer_perceptron.layers[3].backward(activation4)
+
+        # Hidden layer 2
+        activation3 = multilayer_perceptron.layers[2].activation.backward(backward4)
+        backward3 = multilayer_perceptron.layers[2].backward(activation3)
+
+        # Hidden layer 1
+        activation2 = multilayer_perceptron.layers[1].activation.backward(backward3)
+        backward2 = multilayer_perceptron.layers[1].backward(activation2)
+
+        # Input layer
+        activation1 = multilayer_perceptron.layers[0].activation.backward(backward2)
+        backward1 = multilayer_perceptron.layers[0].backward(activation1)
 
         # # Update the weights and the biases
-        # multilayer_perceptron.update_parameters()
+        multilayer_perceptron.update_parameters()
 
-        # TODO: Compute metrics on the validation set
+        # TODO:
+        # - Understand how to use the gradient (loss backward)
+        # - Backpropagation : Activation backward +
+        #                     Layer backward for each layer ?
+        # - Gradient descent
+        # - Batch
+        # - Compute metrics on the validation set
+
+    # ##################################### #
+    # Plot the loss and the accuracy        #
+    # ##################################### #
+
+    plt.plot(losses)
+    plt.title("Loss")
+    plt.xlabel("Epochs")
+    plt.ylabel("Loss")
+    plt.show()
+
+    plt.plot(accuracies)
+    plt.title("Accuracy")
+    plt.xlabel("Epochs")
+    plt.ylabel("Accuracy")
+    plt.show()

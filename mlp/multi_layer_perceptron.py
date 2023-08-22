@@ -15,14 +15,12 @@ class MultiLayerPerceptron:
             input = layer.output
         return self.layers[-1].output
 
-    def backward(self, dvalues):
+    def backward(self, gradient, y_true):
         """
         Backward propagation.
         """
         for layer in reversed(self.layers):
-            layer.backward(dvalues)
-            layer.activation_backward()
-            dvalues = layer.activation.dinput
+            layer.backward(gradient)
 
     def update_parameters(self):
         """

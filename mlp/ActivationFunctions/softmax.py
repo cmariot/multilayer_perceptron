@@ -4,7 +4,6 @@ import numpy as np
 class Softmax_Activation:
 
     def forward(self, input):
-        print("softmax forward")
         self.input = input
         exp_values = \
             np.exp(input - np.max(input, axis=1, keepdims=True))
@@ -27,3 +26,4 @@ class Softmax_Activation:
             # and add it to the array of sample gradients
             self.dinput[index] = np.dot(jacobian_matrix,
                                         single_dvalues)
+        return self.dinput

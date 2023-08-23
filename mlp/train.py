@@ -46,7 +46,8 @@ def create_layers_network(n_features,
                           layers,
                           activations,
                           learning_rate,
-                          decay):
+                          decay,
+                          momentum):
     layers_list = []
     n_layers = len(layers)
     for i in range(n_layers):
@@ -58,7 +59,8 @@ def create_layers_network(n_features,
                     n_neurons=layers[i],
                     activation=activations[i],
                     learning_rate=learning_rate,
-                    decay=decay
+                    decay=decay,
+                    momentum=momentum
                 )
             )
 
@@ -70,7 +72,8 @@ def create_layers_network(n_features,
                     n_neurons=layers[i],
                     activation=activations[i],
                     learning_rate=learning_rate,
-                    decay=decay
+                    decay=decay,
+                    momentum=momentum
                 )
             )
 
@@ -152,7 +155,8 @@ if __name__ == "__main__":
         layers=layers,
         activations=activations,
         learning_rate=learning_rate,
-        decay=0.1
+        decay=0.1,
+        momentum = 0.001
     )
 
     multilayer_perceptron = MultiLayerPerceptron(
@@ -181,31 +185,30 @@ if __name__ == "__main__":
 
         for i in range(n_batch):
 
-            x_batch, y_batch = get_batch(
-                x_train_norm, y_train, i, batch_size
-            )
+            # x_batch, y_batch = get_batch(
+            #     x_train_norm, y_train, i, batch_size
+            # )
 
             # Forward pass
-            last_layer_output = multilayer_perceptron.forward(x_batch)
+            last_layer_output = multilayer_perceptron.forward(x_train_norm)
 
             # Compute the loss
-            loss = loss_function.compute(last_layer_output, y_batch)
+            loss = loss_function.forward(last_layer_output, y_train)
 
             # Get predictions
             y_pred = np.argmax(last_layer_output, axis=1)
 
             # Compute the accuracy
-            accuracy = np.mean(y_pred == y_batch)
+            accuracy = np.mean(y_pred == y_train)
 
-            print(f"epoch: {epoch}, " +
-                  f"acc: {accuracy:.3f}, loss: {loss:.5f}")
+            print(f"epoch: {epoch}, acc: {accuracy:.3f}, loss: {loss}")
 
             # Save the current loss and accuracy, used for the plot
             batch_losses.append(loss)
             batch_accuracies.append(accuracy)
 
             # calculating the derivative of cost with respect to some weight
-            dcost = loss_function.gradient(last_layer_output, y_batch)
+            dcost = loss_function.gradient(last_layer_output, y_train)
 
             # Backpropagation
             multilayer_perceptron.backward(dcost)
@@ -222,11 +225,8 @@ if __name__ == "__main__":
         learning_rates.append(multilayer_perceptron.layers[0].current_learning_rate)
 
         # TODO:
-        # - Understand how to use the gradient (loss backward)
-        # - Backpropagation : Activation backward +
-        #                     Layer backward for each layer ?
-        # - Gradient descent
-        # - Batch
+        # - Gradient descent momentum
+        # - Batch / Stochastic / Mini-batch gradient descent
         # - Compute metrics on the validation set
 
     # ##################################### #

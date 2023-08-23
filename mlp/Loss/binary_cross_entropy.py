@@ -3,17 +3,13 @@ import numpy as np
 
 class BinaryCrossEntropy_Loss:
 
-    def compute(self, output, y):
-        loss_elem = self.forward(output, y)
-        self.output = np.mean(loss_elem)
-        return self.output
-
     def forward(self, y_pred, y_true, eps=1e-15):
         y_pred_clipped = np.clip(y_pred, eps, 1 - eps)
         loss = -(y_true * np.log(y_pred_clipped) +
                  (1 - y_true) * np.log(1 - y_pred_clipped))
         loss_elem = np.mean(loss, axis=-1)
-        return loss_elem
+        self.output = np.mean(loss_elem)
+        return self.output
 
     def gradient(self, dvalues, y_true, eps=1e-15):
         samples = len(dvalues)

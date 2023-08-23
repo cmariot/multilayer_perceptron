@@ -3,9 +3,6 @@ from ActivationFunctions.sigmoid import Sigmoid_Activation
 from ActivationFunctions.softmax import Softmax_Activation
 
 
-np.random.seed(42)
-
-
 class Dense_Layer:
     """
     A dense layer is a layer where each perceptron is connected to
@@ -23,7 +20,8 @@ class Dense_Layer:
                  n_neurons,
                  activation,
                  learning_rate,
-                 decay):
+                 decay,
+                 momentum):
         """
         n_inputs: number of inputs of the layer.
         n_neurons: number of neurons of the layer.
@@ -45,6 +43,9 @@ class Dense_Layer:
             self.current_learning_rate = learning_rate
             self.decay = decay
             self.iterations = 0
+            self.momentum = momentum
+            self.weight_momentums = np.zeros_like(self.weights)
+            self.bias_momentums = np.zeros_like(self.biases)
         except Exception as e:
             print("Error (init Dense_Layer) :", e)
             exit()
@@ -71,5 +72,12 @@ class Dense_Layer:
         return self.dinputs
 
     def update(self):
-        self.weights -= (self.current_learning_rate * self.dweights)
-        self.biases -= (self.current_learning_rate * self.dbiases)
+        weight_updates = self.momentum * self.weight_momentums - \
+            self.current_learning_rate * self.dweights
+        self.weight_momentums = weight_updates
+        bias_updates = self.momentum * self.bias_momentums - \
+            self.current_learning_rate * self.dbiases
+        self.bias_momentums = bias_updates
+
+        self.weights += weight_updates
+        self.biases += bias_updates

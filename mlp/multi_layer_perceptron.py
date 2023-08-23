@@ -8,19 +8,23 @@ class MultiLayerPerceptron:
         Forward propagation.
         """
         for layer in self.layers:
-            # Compute weighted sum
-            layer.forward(input)
-            # Compute activation function output
-            layer.activation_forward()
-            input = layer.output
-        return self.layers[-1].output
+            input = layer.forward(input)
+        return input
 
-    def backward(self, gradient, y_true):
+    def backward(self, dinput):
         """
         Backward propagation.
         """
         for layer in reversed(self.layers):
-            layer.backward(gradient)
+            dinput = layer.backward(dinput)
+        return dinput
+
+    def update_learning_rate(self):
+        """
+        Update learning rate.
+        """
+        for layer in self.layers:
+            layer.update_learning_rate()
 
     def update_parameters(self):
         """
@@ -28,3 +32,10 @@ class MultiLayerPerceptron:
         """
         for layer in self.layers:
             layer.update()
+
+    def update_iterations(self):
+        """
+        Update iterations.
+        """
+        for layer in self.layers:
+            layer.update_iterations()

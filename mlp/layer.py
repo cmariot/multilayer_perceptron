@@ -22,7 +22,8 @@ class Dense_Layer:
                  n_inputs,
                  n_neurons,
                  activation,
-                 learning_rate):
+                 learning_rate,
+                 decay):
         """
         n_inputs: number of inputs of the layer.
         n_neurons: number of neurons of the layer.
@@ -38,20 +39,29 @@ class Dense_Layer:
 
         try:
             self.weights = np.random.randn(n_inputs, n_neurons) * 0.1
-            self.biases = np.zeros((1, n_neurons))
+            self.biases = np.ones((1, n_neurons))
             self.activation = self.activation_function[activation]()
             self.learning_rate = learning_rate
+            self.current_learning_rate = learning_rate
+            self.decay = decay
+            self.iterations = 0
         except Exception as e:
             print("Error (init Dense_Layer) :", e)
             exit()
 
+    def update_learning_rate(self):
+        if self.decay > 0.0:
+            self.current_learning_rate = self.learning_rate * \
+                (1.0 / (1.0 + self.decay * self.iterations))
+
     def forward(self, inputs):
         self.inputs = inputs
         self.weighted_sum = np.dot(inputs, self.weights) + self.biases
+        self.output = self.activation.forward(self.weighted_sum)
+        return self.output
 
-    def activation_forward(self):
-        self.activation.forward(self.weighted_sum)
-        self.output = self.activation.output
+    def update_iterations(self):
+        self.iterations += 1
 
     def backward(self, dvalues):
         dvalues = self.activation.backward(dvalues)
@@ -61,5 +71,5 @@ class Dense_Layer:
         return self.dinputs
 
     def update(self):
-        self.weights -= self.learning_rate * self.dweights
-        self.biases -= self.learning_rate * self.dbiases
+        self.weights -= (self.current_learning_rate * self.dweights)
+        self.biases -= (self.current_learning_rate * self.dbiases)

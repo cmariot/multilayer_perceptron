@@ -28,7 +28,7 @@ def normalize_validation(x_validation, x_min, x_max):
     return x_validation_norm.to_numpy()
 
 
-def categorical_target_to_numerical(y_train, y_validation):
+def target_encoding(y_train, y_validation):
     """
     Encode categorical target to numerical values
     0: Benign
@@ -45,7 +45,8 @@ def categorical_target_to_numerical(y_train, y_validation):
 def create_layers_network(n_features,
                           layers,
                           activations,
-                          learning_rate):
+                          learning_rate,
+                          decay):
     layers_list = []
     n_layers = len(layers)
     for i in range(n_layers):
@@ -56,7 +57,8 @@ def create_layers_network(n_features,
                     n_inputs=n_features,
                     n_neurons=layers[i],
                     activation=activations[i],
-                    learning_rate=learning_rate
+                    learning_rate=learning_rate,
+                    decay=decay
                 )
             )
 
@@ -67,7 +69,8 @@ def create_layers_network(n_features,
                     n_inputs=layers[i - 1],
                     n_neurons=layers[i],
                     activation=activations[i],
-                    learning_rate=learning_rate
+                    learning_rate=learning_rate,
+                    decay=decay
                 )
             )
 
@@ -83,6 +86,8 @@ def create_layers_network(n_features,
 
 
 def get_batch(x, y, i, batch_size):
+
+
     start = i * batch_size
     end = (i + 1) * batch_size
     x_batch = x[start:end]
@@ -93,12 +98,12 @@ def get_batch(x, y, i, batch_size):
 if __name__ == "__main__":
 
     (
-        layers,
-        activations,
-        epochs,
-        loss_name,
-        batch_size,
-        learning_rate
+        layers,           # Number of outputs in each layer
+        activations,      # Activation function in each layer
+        epochs,           # Number of epochs
+        loss_name,        # Loss function
+        batch_size,       # Batch size
+        learning_rate     # Learning rate
     ) = parse_args()
 
     # ##################################### #
@@ -111,20 +116,20 @@ if __name__ == "__main__":
     train_data = load_dataset("../datasets/train.csv")
     validation_data = load_dataset("../datasets/validation.csv")
 
-    # TODO : Features selection ?
-
     x_train = train_data.drop("Diagnosis", axis=1)
-    # Select the 10 last features
-    x_train = x_train.iloc[:, -10:]
     y_train = train_data["Diagnosis"]
 
     x_validation = validation_data.drop("Diagnosis", axis=1)
     y_validation = validation_data["Diagnosis"]
 
+    # TODO :
+    # Features selection ?
+    # Features normalization ?
+
     x_train_norm, x_min, x_max = normalize_train(x_train)
     x_validation_norm = normalize_validation(x_validation, x_min, x_max)
 
-    y_train, y_validation = categorical_target_to_numerical(
+    y_train, y_validation = target_encoding(
         y_train, y_validation
     )
 
@@ -146,7 +151,8 @@ if __name__ == "__main__":
         n_features=x_train_norm.shape[1],
         layers=layers,
         activations=activations,
-        learning_rate=learning_rate
+        learning_rate=learning_rate,
+        decay=0.1
     )
 
     multilayer_perceptron = MultiLayerPerceptron(
@@ -161,6 +167,7 @@ if __name__ == "__main__":
 
     losses = []
     accuracies = []
+    learning_rates = []
 
     n_batch = x_train_norm.shape[0] // batch_size
 
@@ -168,6 +175,9 @@ if __name__ == "__main__":
 
         batch_losses = []
         batch_accuracies = []
+
+        # Update the learning rate
+        multilayer_perceptron.update_learning_rate()
 
         for i in range(n_batch):
 
@@ -198,14 +208,18 @@ if __name__ == "__main__":
             dcost = loss_function.gradient(last_layer_output, y_batch)
 
             # Backpropagation
-            for layer in reversed(multilayer_perceptron.layers):
-                dcost = layer.backward(dcost)
+            multilayer_perceptron.backward(dcost)
 
             # Update the weights and the biases
             multilayer_perceptron.update_parameters()
 
+        # Update the iterations
+        multilayer_perceptron.update_iterations()
+
+
         losses.append(np.mean(batch_losses))
         accuracies.append(np.mean(batch_accuracies))
+        learning_rates.append(multilayer_perceptron.layers[0].current_learning_rate)
 
         # TODO:
         # - Understand how to use the gradient (loss backward)
@@ -220,16 +234,24 @@ if __name__ == "__main__":
     # ##################################### #
 
     plt.plot(losses)
-    plt.title("Loss")
+    plt.title("Loss evolution")
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
     plt.grid()
     plt.show()
 
     plt.plot(accuracies)
-    plt.title("Accuracy")
+    plt.title("Accuracy evolution")
     plt.xlabel("Epochs")
     plt.ylabel("Accuracy")
     plt.ylim(0, 1)
+    plt.grid()
+    plt.show()
+
+    # Plot the learning rate evolution
+    plt.plot(learning_rates)
+    plt.title("Learning rate evolution")
+    plt.xlabel("Iterations")
+    plt.ylabel("Learning rate")
     plt.grid()
     plt.show()

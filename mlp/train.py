@@ -1,75 +1,10 @@
-import argparse
 import pandas
 import numpy as np
+from parse_arguments import parse_args
 from Loss.binary_cross_entropy import BinaryCrossEntropy_Loss
-# from Loss.categorical_cross_entropy import CategoricalCrossEntropy_Loss
 from multi_layer_perceptron import MultiLayerPerceptron
 from layer import Dense_Layer
 from matplotlib import pyplot as plt
-
-
-def parse_args():
-    try:
-        parser = argparse.ArgumentParser()
-
-        parser.add_argument(
-            "--layers",
-            type=int,
-            nargs="+",
-            help="Number of neurons in each layer",
-            default=[30, 24, 24, 2]
-        )
-
-        parser.add_argument(
-            "--activations",
-            type=str,
-            nargs="+",
-            help="Activation function in each layer",
-            default=["sigmoid", "sigmoid", "sigmoid", "softmax"]
-        )
-
-        parser.add_argument(
-            "--epochs",
-            type=int,
-            help="Number of epochs",
-            default=84
-        )
-
-        parser.add_argument(
-            "--loss",
-            type=str,
-            help="Loss function",
-            default="binaryCrossentropy"
-        )
-
-        parser.add_argument(
-            "--batch_size",
-            type=int,
-            help="Batch size",
-            default=8
-        )
-
-        parser.add_argument(
-            "--learning_rate",
-            type=float,
-            help="Learning rate",
-            default=10e-2
-        )
-
-        args = parser.parse_args()
-
-        return (
-            args.layers,
-            args.activations,
-            args.epochs,
-            args.loss,
-            args.batch_size,
-            args.learning_rate
-        )
-
-    except Exception as e:
-        print(e)
-        exit()
 
 
 def load_dataset(path):
@@ -147,12 +82,12 @@ def create_layers_network(n_features,
     return layers_list
 
 
-# def get_batch(x, y, i, batch_size):
-#     start = i * batch_size
-#     end = (i + 1) * batch_size
-#     x_batch = x[start:end]
-#     y_batch = y[start:end]
-#     return x_batch, y_batch
+def get_batch(x, y, i, batch_size):
+    start = i * batch_size
+    end = (i + 1) * batch_size
+    x_batch = x[start:end]
+    y_batch = y[start:end]
+    return x_batch, y_batch
 
 
 if __name__ == "__main__":
@@ -176,7 +111,11 @@ if __name__ == "__main__":
     train_data = load_dataset("../datasets/train.csv")
     validation_data = load_dataset("../datasets/validation.csv")
 
+    # TODO : Features selection ?
+
     x_train = train_data.drop("Diagnosis", axis=1)
+    # Select the 10 last features
+    x_train = x_train.iloc[:, -10:]
     y_train = train_data["Diagnosis"]
 
     x_validation = validation_data.drop("Diagnosis", axis=1)
@@ -222,49 +161,51 @@ if __name__ == "__main__":
 
     losses = []
     accuracies = []
+
+    n_batch = x_train_norm.shape[0] // batch_size
+
     for epoch in range(epochs):
 
-        # Forward pass
-        last_layer_output = multilayer_perceptron.forward(x_train_norm)
+        batch_losses = []
+        batch_accuracies = []
 
-        # Compute the loss
-        loss = loss_function.compute(last_layer_output, y_train)
+        for i in range(n_batch):
 
-        # Get predictions
-        y_pred = np.argmax(last_layer_output, axis=1)
+            x_batch, y_batch = get_batch(
+                x_train_norm, y_train, i, batch_size
+            )
 
-        # Compute the accuracy
-        accuracy = np.mean(y_pred == y_train)
+            # Forward pass
+            last_layer_output = multilayer_perceptron.forward(x_batch)
 
-        print(f"epoch: {epoch}, " +
-              f"acc: {accuracy:.3f}, loss: {loss:.5f}")
+            # Compute the loss
+            loss = loss_function.compute(last_layer_output, y_batch)
 
-        # Save the current loss and accuracy, used for the plot
-        losses.append(loss)
-        accuracies.append(accuracy)
+            # Get predictions
+            y_pred = np.argmax(last_layer_output, axis=1)
 
-        # calculating the derivative of the cost with respect to some weight
-        dcost = loss_function.gradient(last_layer_output, y_train)
+            # Compute the accuracy
+            accuracy = np.mean(y_pred == y_batch)
 
-        # Backpropagation :
-        # Output layer
-        activation4 = multilayer_perceptron.layers[3].activation.backward(dcost)
-        backward4 = multilayer_perceptron.layers[3].backward(activation4)
+            print(f"epoch: {epoch}, " +
+                  f"acc: {accuracy:.3f}, loss: {loss:.5f}")
 
-        # Hidden layer 2
-        activation3 = multilayer_perceptron.layers[2].activation.backward(backward4)
-        backward3 = multilayer_perceptron.layers[2].backward(activation3)
+            # Save the current loss and accuracy, used for the plot
+            batch_losses.append(loss)
+            batch_accuracies.append(accuracy)
 
-        # Hidden layer 1
-        activation2 = multilayer_perceptron.layers[1].activation.backward(backward3)
-        backward2 = multilayer_perceptron.layers[1].backward(activation2)
+            # calculating the derivative of cost with respect to some weight
+            dcost = loss_function.gradient(last_layer_output, y_batch)
 
-        # Input layer
-        activation1 = multilayer_perceptron.layers[0].activation.backward(backward2)
-        backward1 = multilayer_perceptron.layers[0].backward(activation1)
+            # Backpropagation
+            for layer in reversed(multilayer_perceptron.layers):
+                dcost = layer.backward(dcost)
 
-        # # Update the weights and the biases
-        multilayer_perceptron.update_parameters()
+            # Update the weights and the biases
+            multilayer_perceptron.update_parameters()
+
+        losses.append(np.mean(batch_losses))
+        accuracies.append(np.mean(batch_accuracies))
 
         # TODO:
         # - Understand how to use the gradient (loss backward)
@@ -282,10 +223,13 @@ if __name__ == "__main__":
     plt.title("Loss")
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
+    plt.grid()
     plt.show()
 
     plt.plot(accuracies)
     plt.title("Accuracy")
     plt.xlabel("Epochs")
     plt.ylabel("Accuracy")
+    plt.ylim(0, 1)
+    plt.grid()
     plt.show()

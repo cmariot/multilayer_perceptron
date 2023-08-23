@@ -3,6 +3,9 @@ from ActivationFunctions.sigmoid import Sigmoid_Activation
 from ActivationFunctions.softmax import Softmax_Activation
 
 
+np.random.seed(42)
+
+
 class Dense_Layer:
     """
     A dense layer is a layer where each perceptron is connected to
@@ -39,7 +42,7 @@ class Dense_Layer:
             self.activation = self.activation_function[activation]()
             self.learning_rate = learning_rate
         except Exception as e:
-            print(e)
+            print("Error (init Dense_Layer) :", e)
             exit()
 
     def forward(self, inputs):
@@ -51,14 +54,11 @@ class Dense_Layer:
         self.output = self.activation.output
 
     def backward(self, dvalues):
+        dvalues = self.activation.backward(dvalues)
         self.dweights = np.dot(self.inputs.T, dvalues)
         self.dbiases = np.sum(dvalues, axis=0, keepdims=True)
         self.dinputs = np.dot(dvalues, self.weights.T)
         return self.dinputs
-
-    def activation_backward(self):
-        self.activation.backward(self.dinputs)
-        return self.activation.dinputs
 
     def update(self):
         self.weights -= self.learning_rate * self.dweights

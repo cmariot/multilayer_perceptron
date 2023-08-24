@@ -95,7 +95,7 @@ if __name__ == "__main__":
     describe(dataset)
 
     # Split the dataset.
-    train, validation = split_dataset(dataset, 0.8)
+    train, validation = split_dataset(dataset, 0.9)
 
     # Save the train and the validation datasets.
     save_dataset(train, "../datasets/train.csv")

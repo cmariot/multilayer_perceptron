@@ -10,7 +10,7 @@ def parse_args():
             type=int,
             nargs="+",
             help="Number of neurons in each layer",
-            default=[30, 24, 24, 2]
+            default=[30, 24, 24, 24, 2]
         )
 
         parser.add_argument(
@@ -18,14 +18,7 @@ def parse_args():
             type=str,
             nargs="+",
             help="Activation function in each layer",
-            default=["sigmoid", "sigmoid", "sigmoid", "softmax"]
-        )
-
-        parser.add_argument(
-            "--epochs",
-            type=int,
-            help="Number of epochs",
-            default=84
+            default=["sigmoid", "sigmoid", "sigmoid", "sigmoid", "softmax"]
         )
 
         parser.add_argument(
@@ -33,6 +26,13 @@ def parse_args():
             type=str,
             help="Loss function",
             default="binaryCrossentropy"
+        )
+
+        parser.add_argument(
+            "--epochs",
+            type=int,
+            help="Number of epochs",
+            default=150
         )
 
         parser.add_argument(
@@ -46,7 +46,7 @@ def parse_args():
             "--learning_rate",
             type=float,
             help="Learning rate",
-            default=10e-2
+            default=4*10e-4
         )
 
         args = parser.parse_args()
@@ -54,8 +54,8 @@ def parse_args():
         return (
             args.layers,
             args.activations,
-            args.epochs,
             args.loss,
+            args.epochs,
             args.batch_size,
             args.learning_rate
         )

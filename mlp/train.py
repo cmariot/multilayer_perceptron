@@ -1,20 +1,23 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    train.py                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/08/24 14:39:03 by cmariot           #+#    #+#              #
-#    Updated: 2023/08/24 14:39:04 by cmariot          ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+# ****************************************************************************#
+#                                                                             #
+#                                                         :::      ::::::::   #
+#    train.py                                           :+:      :+:    :+:   #
+#                                                     +:+ +:+         +:+     #
+#    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+        #
+#                                                 +#+#+#+#+#+   +#+           #
+#    Created: 2023/08/24 14:39:03 by cmariot           #+#    #+#             #
+#    Updated: 2023/08/24 14:39:04 by cmariot          ###   ########.fr       #
+#                                                                             #
+# ****************************************************************************#
 
 from os import get_terminal_size
 from time import time
 import pandas
 import numpy as np
-from parse_arguments import parse_args
+from get_datasets import (get_training_data,
+                          get_validation_data,
+                          dataset_loaded_message)
+from parse_arguments import parse_arguments
 from Loss.binary_cross_entropy import BinaryCrossEntropy_Loss
 from Plots.loss import plot_loss
 from Plots.metrics import plot_metrics
@@ -25,141 +28,31 @@ from Metrics.precision import precision_score_
 from Metrics.recall import recall_score_
 from Metrics.confusion_matrix import confusion_matrix_
 from multi_layer_perceptron import MultiLayerPerceptron
-from layer import Dense_Layer
 
 
-def load_dataset(path):
-    try:
-        dataset = pandas.read_csv(path)
-        return dataset
-    except Exception:
-        print(f"Error: can't load the dataset {path}")
-        exit()
+def header():
+    print("""
+              _ _   _     __
+  /\\/\\  _   _| | |_(_)   / /  __ _ _   _  ___ _ __
+ /    \\| | | | | __| |  / /  / _` | | | |/ _ \\ '__|
+/ /\\/\\ \\ |_| | | |_| | / /__| (_| | |_| |  __/ |
+\\/    \\/\\__,_|_|\\__|_| \\____/\\__,_|\\__, |\\___|_|
+   ___                        _    |___/
+  / _ \\___ _ __ ___ ___ _ __ | |_ _ __ ___  _ __
+ / /_)/ _ \\ '__/ __/ _ \\ '_ \\| __| '__/ _ \\| '_ \\
+/ ___/  __/ | | (_|  __/ |_) | |_| | | (_) | | | |
+\\/    \\___|_|  \\___\\___| .__/ \\__|_|  \\___/|_| |_|
+                       |_|
+""")
 
 
-def get_training_data(dataset_path):
-    """
-    Load the training dataset, normalize the features and
-    replace the target labels by 0/1.
-    """
-
-    # Load the training dataset
-    train_data = load_dataset(dataset_path)
-
-    def normalize_train(x_train):
-        """
-        Normalize the features of the training dataset.
-        All the features will be between 0 and 1.
-        Return the normalized features, the minimum and the maximum
-        values of each feature, used to normalize the validation set.
-        """
-        x_min = x_train.min()
-        x_max = x_train.max()
-        x_train_norm = (x_train - x_min) / (x_max - x_min)
-        return x_train_norm.to_numpy(), x_min, x_max
-
-    try:
-
-        # Get the features and normalize them
-        x_train = train_data.drop("Diagnosis", axis=1)
-        x_train_norm, x_min, x_max = normalize_train(x_train)
-
-        # Get the target and replace the labels by 0/1
-        y_train = train_data["Diagnosis"]
-        y_train = np.where(y_train == "M", 0, 1)
-        y_train = y_train.reshape(-1, 1)
-
-        return x_train_norm, y_train, x_min, x_max
-
-    except Exception:
-        print("Error: can't get the training data.")
-        exit()
-
-
-def get_validation_data(dataset_path, x_min, x_max):
-    """
-    Load the validation dataset, normalize the features and
-    replace the target labels by 0/1.
-    """
-
-    # Load the validation dataset
-    validation_data = load_dataset(dataset_path)
-
-    def normalize_validation(x_validation, x_min, x_max):
-        """
-        Normalize the features of the validation dataset.
-        Use the minimum and the maximum values of each feature
-        of the training set to normalize the validation set.
-        All the features will be between 0 and 1.
-        """
-        x_validation_norm = (x_validation - x_min) / (x_max - x_min)
-        return x_validation_norm.to_numpy()
-
-    try:
-
-        # Get the features and normalize them
-        x_validation = validation_data.drop("Diagnosis", axis=1)
-        x_validation_norm = normalize_validation(x_validation, x_min, x_max)
-
-        # Get the target and replace the labels by 0/1
-        y_validation = validation_data["Diagnosis"]
-        y_validation = np.where(y_validation == "M", 0, 1)
-        y_validation = y_validation.reshape(-1, 1)
-
-        return x_validation_norm, y_validation
-
-    except Exception:
-        print("Error: can't get the validation data.")
-        exit()
-
-
-def create_layers_network(n_features,
-                          layers,
-                          activations,
-                          learning_rate,
-                          decay,
-                          momentum):
-    """
-    Create a list of layers, used to init the MultiLayerPerceptron class
-    Args:
-    - n_features : number of dataset features (input for the Input Layer)
-    - layers : list of number of input for each layer
-    - activation : list of names of the activation function of each layer
-    - learning_rate : initial learning rate
-    - decay : decay used to minimize the learning rate during training
-    - momentum : momentum of the layers, used to avoid local minima
-    """
-
-    try:
-
-        layers_list = []
-        n_layers = len(layers)
-        for i in range(n_layers):
-            n_input = n_features if i == 0 else layers[i - 1]
-            layers_list.append(
-                Dense_Layer(
-                    n_inputs=n_input,
-                    n_neurons=layers[i],
-                    activation=activations[i],
-                    learning_rate=learning_rate,
-                    decay=decay,
-                    momentum=momentum
-                )
-            )
-            type = "Input" if i == 0 \
-                else "Hidden" if i < n_layers - 1 \
-                else "Output"
-            print(f"{type} layer created.\n" +
-                  f"Number of inputs: {n_input}\n" +
-                  f"Number of neurons: {layers[i]}\n" +
-                  f"Activation function: {activations[i]}\n" +
-                  f"Learning rate: {learning_rate}\n")
-        return layers_list
-
-    except Exception:
-
-        print("Error: cannot create the layer list.")
-        exit()
+def metrics_dict():
+    return {
+        "accuracy": [],
+        "precision": [],
+        "recall": [],
+        "f1_score": []
+    }
 
 
 def get_batch(x, y, i, batch_size):
@@ -216,13 +109,13 @@ def ft_progress(iterable,
             filled_length = int(length * i / total)
             percent_str = f'[{(i / total) * 100:6.2f} %] '
             progress_str = str(fill * filled_length
-                                + empty * (length - filled_length))
+                               + empty * (length - filled_length))
             counter_str = f'  [{i:>{len(str(total))}}/{total}] '
             bar = ("\033[F\033[K  " + progress_str + "\n"
-                    + counter_str
-                    + percent_str
-                    + et_str
-                    + eta_str)
+                   + counter_str
+                   + percent_str
+                   + et_str
+                   + eta_str)
             print(bar, end=print_end)
             yield item
         print()
@@ -233,6 +126,8 @@ def ft_progress(iterable,
 
 if __name__ == "__main__":
 
+    header()
+
     (
         layers,           # Number of outputs in each layer
         activations,      # Activation function in each layer
@@ -240,14 +135,19 @@ if __name__ == "__main__":
         epochs,           # Number of epochs
         batch_size,       # Batch size
         learning_rate     # Learning rate
-    ) = parse_args()
+    ) = parse_arguments()
 
-    # ##################################### #
-    # 1- Load the datasets,                 #
-    # 2- Get the features and the target,   #
-    # 3- Normalize the features.            #
-    # 4- Replace the target labels by 0/1,  #
-    # ##################################### #
+    # ############################################### #
+    # Load the datasets,                              #
+    # - Training dataset is used to train the model   #
+    # - Validation dataset is used to check the model #
+    #                                                 #
+    # The dataset features are normalized             #
+    # (between 0 and 1)                               #
+    #                                                 #
+    # The dataset targets are replaced by 0 for       #
+    #  Malignant and 1 for benign.                    #
+    # ############################################### #
 
     (
         x_train_norm,
@@ -261,14 +161,10 @@ if __name__ == "__main__":
         y_validation
     ) = get_validation_data("../datasets/validation.csv", x_min, x_max)
 
-    n_features = x_train_norm.shape[1]
-    n_train_samples = x_train_norm.shape[0]
-    n_validation_samples = x_validation_norm.shape[0]
-
-    print("Datasets loaded and normalized.\n\n" +
-          f"Number of features: {n_features}\n" +
-          f"Number of training samples: {n_train_samples}\n" +
-          f"Number of validation samples: {n_validation_samples}\n")
+    (
+        n_features,
+        n_train_samples
+    ) = dataset_loaded_message(x_train_norm, x_validation_norm)
 
     # Press enter to continue
     input("Press enter to create the neural network ...\n")
@@ -282,18 +178,15 @@ if __name__ == "__main__":
     # - Output layer   : softmax 24 inputs /  2 outputs #
     # ################################################# #
 
-    # Create the layers list
-    layers_list = create_layers_network(
+    multilayer_perceptron = MultiLayerPerceptron(
         n_features=n_features,
         layers=layers,
         activations=activations,
         learning_rate=learning_rate,
         decay=0.0005,   # Decay : learning_rate decreases over time
-        momentum=0.05  # Momentum : avoid local minima and speed up SGD
-    )
-
-    multilayer_perceptron = MultiLayerPerceptron(
-       layers=layers_list
+        momentum=0.05,  # Momentum : avoid local minima and speed up SGD
+        batch_size=batch_size,
+        n_train_samples=n_train_samples
     )
 
     loss_function = BinaryCrossEntropy_Loss()
@@ -302,11 +195,7 @@ if __name__ == "__main__":
     # Train the neural network              #
     # ##################################### #
 
-    n_batch = n_train_samples // batch_size
-    if n_train_samples % batch_size != 0:
-        n_batch += 1
-
-    input("Press enter to continue...\n")
+    input("Press enter to train the model...\n")
 
     metrics_functions = [
         accuracy_score_,
@@ -315,35 +204,20 @@ if __name__ == "__main__":
         f1_score_
     ]
 
-    training_metrics = {
-        "accuracy": [],
-        "precision": [],
-        "recall": [],
-        "f1_score": [],
-    }
-
-    validation_metrics = {
-        "accuracy": [],
-        "precision": [],
-        "recall": [],
-        "f1_score": [],
-    }
-
+    losses_training = []
+    losses_validation = []
     learning_rates = []
-    losses = []
+    training_metrics = metrics_dict()
+    validation_metrics = metrics_dict()
 
     for epoch in ft_progress(range(epochs)):
 
         batch_losses = []
 
-        batch_train_metrics = batch_validation_metrics = {
-            "accuracy": [],
-            "precision": [],
-            "recall": [],
-            "f1_score": [],
-        }
+        batch_train_metrics = metrics_dict()
+        batch_validation_metrics = metrics_dict()
 
-        for i in range(n_batch):
+        for i in range(multilayer_perceptron.n_batch):
 
             x_batch, y_batch = get_batch(
                 x_train_norm, y_train, i, batch_size
@@ -380,22 +254,44 @@ if __name__ == "__main__":
             # Update the iterations
             multilayer_perceptron.update_iterations()
 
-        # Compute metrics on the validation set
-        last_layer_output = multilayer_perceptron.forward(
-            x_validation_norm
-        )
-        y_pred = np.argmax(last_layer_output, axis=1).reshape(-1, 1)
-        for i, (metric, list_) in enumerate(validation_metrics.items()):
-            list_.append(metrics_functions[i](y_validation, y_pred))
+        # #################### #
+        # Training set metrics #
+        # #################### #
+
+        # Save the training set loss mean for the current epoch
+        losses_training.append(np.mean(batch_losses))
 
         # Append the batch metrics mean to training_metrics
         for i, (metric, list_) in enumerate(batch_train_metrics.items()):
             training_metrics[metric].append(np.mean(list_))
 
-        losses.append(np.mean(batch_losses))
+        # ############# #
+        # Learning rate #
+        # ############# #
+
+        # Save the current learning rate
         learning_rates.append(
             multilayer_perceptron.layers[0].current_learning_rate
         )
+
+        # ###################### #
+        # Validation set metrics #
+        # ###################### #
+
+        # Compute metrics on the validation set
+        last_layer_output = multilayer_perceptron.forward(
+            x_validation_norm
+        )
+        y_pred = np.argmax(last_layer_output, axis=1).reshape(-1, 1)
+
+        # Compute the loss for the validation set
+        losses_validation.append(
+            loss_function.forward(y_pred, y_validation)
+        )
+
+        # Compute other metrics on the validation set
+        for i, (metric, list_) in enumerate(validation_metrics.items()):
+            list_.append(metrics_functions[i](y_validation, y_pred))
 
         # TODO:
         # - Activation / Loss backward check
@@ -405,7 +301,6 @@ if __name__ == "__main__":
     # Final metrics on validation set #
     # ############################### #
 
-    # Get the last element of the validation metrics lists and save them in a dict
     final_validation_metrics = {
         "accuracy": validation_metrics["accuracy"][-1],
         "precision": validation_metrics["precision"][-1],
@@ -419,7 +314,6 @@ if __name__ == "__main__":
         index=["Validation set metrics"]
     )
     print("\n", df_metrics)
-
 
     # ###################################### #
     # Confusion Matrix on the validation set #
@@ -437,7 +331,7 @@ if __name__ == "__main__":
     # ##################################### #
 
     # Loss evolution
-    plot_loss(losses)
+    plot_loss(losses_training, losses_validation)
 
     # Accuracy evolution
     plot_metrics(

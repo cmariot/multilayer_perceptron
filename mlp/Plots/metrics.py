@@ -20,7 +20,7 @@ def plot_metrics(training_metrics: dict, validation_metrics: dict):
 
     try:
 
-        fig, ax = plt.subplots(2, 2, figsize=(15, 10))
+        fig, ax = plt.subplots(2, 2)
 
         fig.suptitle("Metrics evolution, computed on the training and validation sets during the model training.")
 

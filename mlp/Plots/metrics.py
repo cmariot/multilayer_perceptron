@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    metrics.py                                         :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2023/08/24 14:39:43 by cmariot           #+#    #+#              #
+#    Updated: 2023/08/24 14:39:44 by cmariot          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 import matplotlib.pyplot as plt
 
 
@@ -10,7 +22,7 @@ def plot_metrics(training_metrics: dict, validation_metrics: dict):
 
         fig, ax = plt.subplots(2, 2, figsize=(15, 10))
 
-        fig.suptitle("Metrics evolution")
+        fig.suptitle("Metrics evolution, computed on the training and validation sets during the model training.")
 
         for i in range(2):
 
@@ -32,7 +44,6 @@ def plot_metrics(training_metrics: dict, validation_metrics: dict):
                     verticalalignment="center",
                     color="b"
                 )
-
 
                 ax[i, j].set_xlabel("Epochs")
                 ax[i, j].set_xlim(0, len(validation_values) + 8)

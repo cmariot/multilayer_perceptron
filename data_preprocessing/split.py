@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    split.py                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2023/08/24 14:40:33 by cmariot           #+#    #+#              #
+#    Updated: 2023/08/24 14:40:34 by cmariot          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 import pandas
 from describe import describe
 
@@ -28,7 +40,7 @@ def add_column_names(dataset, columns):
 
 def split_dataset(dataset, train_percentage):
     try:
-        train = dataset.sample(frac=train_percentage, random_state=0)
+        train = dataset.sample(frac=train_percentage)
         validation = dataset.drop(train.index)
         print("Dataset splitted.")
         print(f"Train set: {len(train)} samples.")
@@ -95,7 +107,7 @@ if __name__ == "__main__":
     describe(dataset)
 
     # Split the dataset.
-    train, validation = split_dataset(dataset, 0.9)
+    train, validation = split_dataset(dataset, 0.8)
 
     # Save the train and the validation datasets.
     save_dataset(train, "../datasets/train.csv")

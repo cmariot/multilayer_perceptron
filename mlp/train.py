@@ -1,3 +1,17 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    train.py                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2023/08/24 14:39:03 by cmariot           #+#    #+#              #
+#    Updated: 2023/08/24 14:39:04 by cmariot          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+from os import get_terminal_size
+from time import time
 import pandas
 import numpy as np
 from parse_arguments import parse_args
@@ -158,6 +172,65 @@ def get_batch(x, y, i, batch_size):
     return x_batch, y_batch
 
 
+def ft_progress(iterable,
+                length=get_terminal_size().columns - 4,
+                fill='█',
+                empty='░',
+                print_end='\r'):
+    """
+    Progress bar generator.
+    """
+
+    def get_elapsed_time_str(elapsed_time):
+        """
+        Return the elapsed time as str.
+        """
+        if elapsed_time < 60:
+            return f'[Elapsed-time {elapsed_time:.2f} s]'
+        elif elapsed_time < 3600:
+            return f'[Elapsed-time {elapsed_time / 60:.0f} m]'
+        else:
+            return f'[Elapsed-time {elapsed_time / 3600:.0f} h]'
+
+    def get_eta_str(eta):
+        """
+        Return the Estimed Time Arrival as str.
+        """
+        if eta == 0.0:
+            return ' [DONE]                         '
+        elif eta < 60:
+            return f' [{eta:.0f} s remaining]       '
+        elif eta < 3600:
+            return f' [{eta / 60:.0f} m remaining]  '
+        else:
+            return f' [{eta / 3600:.0f} h remaining]'
+
+    try:
+        print()
+        total = len(iterable)
+        start = time()
+        for i, item in enumerate(iterable, start=1):
+            elapsed_time = time() - start
+            et_str = get_elapsed_time_str(elapsed_time)
+            eta_str = get_eta_str(elapsed_time * (total / i - 1))
+            filled_length = int(length * i / total)
+            percent_str = f'[{(i / total) * 100:6.2f} %] '
+            progress_str = str(fill * filled_length
+                                + empty * (length - filled_length))
+            counter_str = f'  [{i:>{len(str(total))}}/{total}] '
+            bar = ("\033[F\033[K  " + progress_str + "\n"
+                    + counter_str
+                    + percent_str
+                    + et_str
+                    + eta_str)
+            print(bar, end=print_end)
+            yield item
+        print()
+    except Exception:
+        print("Error: ft_progress")
+        return None
+
+
 if __name__ == "__main__":
 
     (
@@ -231,7 +304,7 @@ if __name__ == "__main__":
 
     n_batch = n_train_samples // batch_size
     if n_train_samples % batch_size != 0:
-        n_batch += 0
+        n_batch += 1
 
     input("Press enter to continue...\n")
 
@@ -259,7 +332,7 @@ if __name__ == "__main__":
     learning_rates = []
     losses = []
 
-    for epoch in range(epochs + 1):
+    for epoch in ft_progress(range(epochs)):
 
         batch_losses = []
 
@@ -279,17 +352,15 @@ if __name__ == "__main__":
             # Forward pass
             last_layer_output = multilayer_perceptron.forward(x_batch)
 
-            # Compute the loss
-            loss = loss_function.forward(last_layer_output, y_batch)
-
             # Get predictions
             y_pred = np.argmax(last_layer_output, axis=1).reshape(-1, 1)
+
+            # Compute the loss
+            loss = loss_function.forward(y_pred, y_batch)
 
             # Compute metrics on the training set
             for i, (metric, list_) in enumerate(batch_train_metrics.items()):
                 list_.append(metrics_functions[i](y_batch, y_pred))
-
-            print(f"epoch: {epoch}, loss: {loss}")
 
             # Save the current loss, used for the plot
             batch_losses.append(loss)
@@ -330,21 +401,36 @@ if __name__ == "__main__":
         # - Activation / Loss backward check
         # - Loss + Activation output in the same class ?
 
+    # ############################### #
+    # Final metrics on validation set #
+    # ############################### #
+
+    # Get the last element of the validation metrics lists and save them in a dict
+    final_validation_metrics = {
+        "accuracy": validation_metrics["accuracy"][-1],
+        "precision": validation_metrics["precision"][-1],
+        "recall": validation_metrics["recall"][-1],
+        "f1_score": validation_metrics["f1_score"][-1],
+    }
+
+    # Print the final metrics
+    df_metrics = pandas.DataFrame(
+        final_validation_metrics,
+        index=["Validation set metrics"]
+    )
+    print("\n", df_metrics)
+
+
     # ###################################### #
     # Confusion Matrix on the validation set #
     # ###################################### #
 
-    # Replace the 0 by "Malignant" and the 1 by "Benign"
-    y_pred = np.where(y_pred == 0, "Malignant", "Benign")
-    y_validation = np.where(y_validation == 0, "Malignant", "Benign")
-    print("\nConfusion matrix on the validation set:\n")
     confusion_matrix_(
         y_true=y_validation,
         y_hat=y_pred,
         labels=["Malignant", "Benign"],
         df_option=True
     )
-    print()
 
     # ##################################### #
     # Plots                                 #

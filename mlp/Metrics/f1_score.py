@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    f1_score.py                                        :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2023/08/24 14:39:58 by cmariot           #+#    #+#              #
+#    Updated: 2023/08/24 14:39:59 by cmariot          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 import numpy as np
 from Metrics.precision import precision_score_
 from Metrics.recall import recall_score_

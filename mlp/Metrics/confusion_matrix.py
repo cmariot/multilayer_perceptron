@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    confusion_matrix.py                                :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2023/08/24 14:40:02 by cmariot           #+#    #+#              #
+#    Updated: 2023/08/24 14:40:03 by cmariot          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 import pandas
 import numpy as np
 
@@ -35,6 +47,8 @@ def confusion_matrix_(y_true, y_hat, labels=None, df_option=False):
         if y_true.size == 0 or y_hat.size == 0:
             print("Empty array")
             return None
+        y_hat = np.where(y_hat == 0, "Malignant", "Benign")
+        y_true = np.where(y_true == 0, "Malignant", "Benign")
         if labels is None:
             labels = np.unique(np.concatenate((y_true, y_hat)))
         cm = np.zeros((len(labels), len(labels)), dtype=int)
@@ -44,7 +58,7 @@ def confusion_matrix_(y_true, y_hat, labels=None, df_option=False):
                                     & (y_hat == labels[j]))[0].shape[0]
         if df_option:
             cm = pandas.DataFrame(cm, index=labels, columns=labels)
-        print(cm)
+        print("\nConfusion matrix on the validation set:\n\n", cm, "\n")
         return cm
 
     except Exception:

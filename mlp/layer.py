@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    layer.py                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2023/08/24 14:39:39 by cmariot           #+#    #+#              #
+#    Updated: 2023/08/24 14:39:40 by cmariot          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 import numpy as np
 from ActivationFunctions.sigmoid import Sigmoid_Activation
 from ActivationFunctions.softmax import Softmax_Activation

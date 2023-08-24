@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    describe.py                                        :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2023/08/24 14:40:46 by cmariot           #+#    #+#              #
+#    Updated: 2023/08/24 14:40:47 by cmariot          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 from argparse import ArgumentParser
 import pandas
 from metrics import TinyStatistician as Metrics

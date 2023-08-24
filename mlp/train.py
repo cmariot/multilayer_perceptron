@@ -215,7 +215,7 @@ if __name__ == "__main__":
         layers=layers,
         activations=activations,
         learning_rate=learning_rate,
-        decay=0.005,   # Decay : learning_rate decreases over time
+        decay=0.0005,   # Decay : learning_rate decreases over time
         momentum=0.05  # Momentum : avoid local minima and speed up SGD
     )
 
@@ -231,7 +231,7 @@ if __name__ == "__main__":
 
     n_batch = n_train_samples // batch_size
     if n_train_samples % batch_size != 0:
-        n_batch += 1
+        n_batch += 0
 
     input("Press enter to continue...\n")
 
@@ -334,12 +334,17 @@ if __name__ == "__main__":
     # Confusion Matrix on the validation set #
     # ###################################### #
 
+    # Replace the 0 by "Malignant" and the 1 by "Benign"
+    y_pred = np.where(y_pred == 0, "Malignant", "Benign")
+    y_validation = np.where(y_validation == 0, "Malignant", "Benign")
+    print("\nConfusion matrix on the validation set:\n")
     confusion_matrix_(
         y_true=y_validation,
         y_hat=y_pred,
-        labels=[1, 0],
+        labels=["Malignant", "Benign"],
         df_option=True
     )
+    print()
 
     # ##################################### #
     # Plots                                 #

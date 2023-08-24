@@ -8,18 +8,39 @@ def plot_metrics(training_metrics: dict, validation_metrics: dict):
 
     try:
 
-        colors = ["b", "g", "r", "y"]
+        fig, ax = plt.subplots(2, 2, figsize=(15, 10))
 
-        for i, (metric_name, metric_list) in enumerate(training_metrics.items()):
-            plt.plot(metric_list, label=f"{metric_name} training", color=colors[i])
-        for i, (metric_name, metric_list) in enumerate(validation_metrics.items()):
-            plt.plot(metric_list, label=f"{metric_name} validation", color=colors[i], linestyle=":")
-        plt.title("Metrics evolution")
-        plt.xlabel("Epochs")
-        plt.ylabel("Accuracy")
-        plt.ylim(-0.05, 1.05)
-        plt.grid()
-        plt.legend()
+        fig.suptitle("Metrics evolution")
+
+        for i in range(2):
+
+            for j in range(2):
+
+                metric_name = list(training_metrics.keys())[i * 2 + j]
+                validation_values = validation_metrics[metric_name]
+                training_values = training_metrics[metric_name]
+
+                ax[i, j].plot(training_values, label=f"training {metric_name}", color='b', linestyle=':')
+                ax[i, j].plot(validation_values, label=f"validation {metric_name}", color='b')
+
+                # Display the last value of the metric with the text method
+                ax[i, j].text(
+                    len(validation_values) - 1,
+                    validation_values[-1],
+                    f" {validation_values[-1]:.4f}",
+                    horizontalalignment="left",
+                    verticalalignment="center",
+                    color="b"
+                )
+
+
+                ax[i, j].set_xlabel("Epochs")
+                ax[i, j].set_xlim(0, len(validation_values) + 8)
+                ax[i, j].set_ylabel(metric_name)
+                ax[i, j].set_ylim(-0.05, 1.05)
+                ax[i, j].grid()
+                ax[i, j].legend()
+
         plt.show()
 
     except Exception as e:

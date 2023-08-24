@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/24 14:39:26 by cmariot           #+#    #+#              #
-#    Updated: 2023/08/24 14:39:27 by cmariot          ###   ########.fr        #
+#    Updated: 2023/08/24 16:22:20 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,7 +44,7 @@ def parse_args():
             "--epochs",
             type=int,
             help="Number of epochs",
-            default=50
+            default=100
         )
 
         parser.add_argument(

@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/24 14:39:03 by cmariot           #+#    #+#              #
-#    Updated: 2023/08/24 14:39:04 by cmariot          ###   ########.fr        #
+#    Updated: 2023/08/24 16:21:49 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,24 @@ from Metrics.confusion_matrix import confusion_matrix_
 from multi_layer_perceptron import MultiLayerPerceptron
 from layer import Dense_Layer
 
+
+def header():
+
+    print(
+"""
+              _ _   _   __                       
+  /\/\  _   _| | |_(_  / /  __ _ _   _  ___ _ __ 
+ /    \| | | | | __|  / /  / _` | | | |/ _ | '__|
+/ /\/\ | |_| | | |_| / /__| (_| | |_| |  __| |   
+\/    \/\__,_|_|\__|_\____/\__,_|\__, |\___|_|   
+   ___                        _  |___/           
+  / _ \___ _ __ ___ ___ _ __ | |_ _ __ ___  _ __  
+ / /_)/ _ | '__/ __/ _ | '_ \| __| '__/ _ \| '_ \ 
+/ ___|  __| | | (_|  __| |_) | |_| | | (_) | | | |
+\/    \___|_|  \___\___| .__/ \__|_|  \___/|_| |_|
+                       |_|                        
+"""
+    )
 
 def load_dataset(path):
     try:
@@ -157,9 +175,21 @@ def create_layers_network(n_features,
         return layers_list
 
     except Exception:
-
         print("Error: cannot create the layer list.")
         exit()
+
+
+def metrics_dict():
+    """
+    return a dict with the metrics as keys and empty lists as values,
+    used to store the metrics computed during the training.
+    """
+    return {
+        "accuracy": [],
+        "precision": [],
+        "recall": [],
+        "f1_score": [],
+    }
 
 
 def get_batch(x, y, i, batch_size):
@@ -233,6 +263,8 @@ def ft_progress(iterable,
 
 if __name__ == "__main__":
 
+    header()
+
     (
         layers,           # Number of outputs in each layer
         activations,      # Activation function in each layer
@@ -282,6 +314,9 @@ if __name__ == "__main__":
     # - Output layer   : softmax 24 inputs /  2 outputs #
     # ################################################# #
 
+    # TODO:
+    # - Add the creation of the layers in the MultiLayerPerceptron class constructor
+
     # Create the layers list
     layers_list = create_layers_network(
         n_features=n_features,
@@ -306,8 +341,6 @@ if __name__ == "__main__":
     if n_train_samples % batch_size != 0:
         n_batch += 1
 
-    input("Press enter to continue...\n")
-
     metrics_functions = [
         accuracy_score_,
         precision_score_,
@@ -315,33 +348,19 @@ if __name__ == "__main__":
         f1_score_
     ]
 
-    training_metrics = {
-        "accuracy": [],
-        "precision": [],
-        "recall": [],
-        "f1_score": [],
-    }
-
-    validation_metrics = {
-        "accuracy": [],
-        "precision": [],
-        "recall": [],
-        "f1_score": [],
-    }
-
+    training_metrics = metrics_dict()
+    validation_metrics = metrics_dict()
     learning_rates = []
-    losses = []
+    training_losses = []
+    validation_losses = []
 
+    input("Press enter to train the neural network ...\n")
     for epoch in ft_progress(range(epochs)):
 
-        batch_losses = []
+        training_batch_losses = []
 
-        batch_train_metrics = batch_validation_metrics = {
-            "accuracy": [],
-            "precision": [],
-            "recall": [],
-            "f1_score": [],
-        }
+        batch_train_metrics = metrics_dict()
+        batch_validation_metrics = metrics_dict()
 
         for i in range(n_batch):
 
@@ -356,14 +375,14 @@ if __name__ == "__main__":
             y_pred = np.argmax(last_layer_output, axis=1).reshape(-1, 1)
 
             # Compute the loss
-            loss = loss_function.forward(y_pred, y_batch)
+            training_loss = loss_function.forward(y_pred, y_batch)
 
             # Compute metrics on the training set
             for i, (metric, list_) in enumerate(batch_train_metrics.items()):
                 list_.append(metrics_functions[i](y_batch, y_pred))
 
             # Save the current loss, used for the plot
-            batch_losses.append(loss)
+            training_batch_losses.append(training_loss)
 
             # calculating the derivative of cost with respect to some weight
             dcost = loss_function.gradient(last_layer_output, y_batch)
@@ -392,7 +411,7 @@ if __name__ == "__main__":
         for i, (metric, list_) in enumerate(batch_train_metrics.items()):
             training_metrics[metric].append(np.mean(list_))
 
-        losses.append(np.mean(batch_losses))
+        training_losses.append(np.mean(training_batch_losses))
         learning_rates.append(
             multilayer_perceptron.layers[0].current_learning_rate
         )
@@ -437,7 +456,7 @@ if __name__ == "__main__":
     # ##################################### #
 
     # Loss evolution
-    plot_loss(losses)
+    plot_loss(training_losses)
 
     # Accuracy evolution
     plot_metrics(

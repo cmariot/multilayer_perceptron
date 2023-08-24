@@ -36,6 +36,10 @@ def recall_score_(y, y_hat, pos_label=1):
 
         tp = np.sum(np.logical_and(y == pos_label, y == y_hat))
         fn = np.sum(np.logical_and(y == pos_label, y_hat != pos_label))
+
+        if tp + fn == 0:
+            return 0.0
+
         return tp / (tp + fn)
 
     except Exception:

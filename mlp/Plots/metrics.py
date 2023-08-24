@@ -1,17 +1,19 @@
 import matplotlib.pyplot as plt
 
 
-def plot_metrics(training_metrics: dict):
+def plot_metrics(training_metrics: dict, validation_metrics: dict):
     """
     Plot the metrics evolution.
     """
 
     try:
 
-        for metric_name, metric_list in training_metrics.items():
-            plt.plot(metric_list, label=f"{metric_name} training")
-            if metric_name == "f1_score":
-                print(f"Max f1_score: {max(metric_list)}")
+        colors = ["b", "g", "r", "y"]
+
+        for i, (metric_name, metric_list) in enumerate(training_metrics.items()):
+            plt.plot(metric_list, label=f"{metric_name} training", color=colors[i])
+        for i, (metric_name, metric_list) in enumerate(validation_metrics.items()):
+            plt.plot(metric_list, label=f"{metric_name} validation", color=colors[i], linestyle=":")
         plt.title("Metrics evolution")
         plt.xlabel("Epochs")
         plt.ylabel("Accuracy")

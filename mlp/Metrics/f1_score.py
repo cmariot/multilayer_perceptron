@@ -23,25 +23,26 @@ def f1_score_(y, y_hat, pos_label=1):
     try:
         if not isinstance(y, np.ndarray) \
                 or not isinstance(y_hat, np.ndarray):
-            print(0)
             return None
 
         if y.shape != y_hat.shape:
-            print(1)
             return None
 
         if y.size == 0 or y_hat.size == 0:
-            print(2)
             return None
 
         if not isinstance(pos_label, (int, str)):
-            print(3)
             return None
 
         precision = precision_score_(y, y_hat, pos_label)
         recall = recall_score_(y, y_hat, pos_label)
+
+        if precision is None or recall is None:
+            return 0.0
+        if precision + recall == 0:
+            return 0.0
+
         return 2 * (precision * recall) / (precision + recall)
 
-    except Exception as e:
-        print(e)
-        return None
+    except Exception:
+        return 0.0

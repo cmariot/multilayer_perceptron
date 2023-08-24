@@ -36,7 +36,11 @@ def precision_score_(y, y_hat, pos_label=1):
 
         tp = np.sum(np.logical_and(y == pos_label, y == y_hat))
         fp = np.sum(np.logical_and(y != pos_label, y_hat == pos_label))
+
+        if tp + fp == 0:
+            return 0.0
+
         return tp / (tp + fp)
 
     except Exception:
-        return None
+        return 0

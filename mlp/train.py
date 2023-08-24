@@ -52,7 +52,7 @@ def get_training_data(dataset_path):
 
         # Get the target and replace the labels by 0/1
         y_train = train_data["Diagnosis"]
-        y_train = np.where(y_train == "M", 1, 0)
+        y_train = np.where(y_train == "M", 0, 1)
         y_train = y_train.reshape(-1, 1)
 
         return x_train_norm, y_train, x_min, x_max
@@ -89,7 +89,7 @@ def get_validation_data(dataset_path, x_min, x_max):
 
         # Get the target and replace the labels by 0/1
         y_validation = validation_data["Diagnosis"]
-        y_validation = np.where(y_validation == "M", 1, 0)
+        y_validation = np.where(y_validation == "M", 0, 1)
         y_validation = y_validation.reshape(-1, 1)
 
         return x_validation_norm, y_validation
@@ -263,7 +263,7 @@ if __name__ == "__main__":
 
         batch_losses = []
 
-        batch_train_metrics = {
+        batch_train_metrics = batch_validation_metrics = {
             "accuracy": [],
             "precision": [],
             "recall": [],
@@ -291,7 +291,7 @@ if __name__ == "__main__":
 
             print(f"epoch: {epoch}, loss: {loss}")
 
-            # Save the current loss and accuracy, used for the plot
+            # Save the current loss, used for the plot
             batch_losses.append(loss)
 
             # calculating the derivative of cost with respect to some weight
@@ -309,6 +309,14 @@ if __name__ == "__main__":
             # Update the iterations
             multilayer_perceptron.update_iterations()
 
+        # Compute metrics on the validation set
+        last_layer_output = multilayer_perceptron.forward(
+            x_validation_norm
+        )
+        y_pred = np.argmax(last_layer_output, axis=1).reshape(-1, 1)
+        for i, (metric, list_) in enumerate(validation_metrics.items()):
+            list_.append(metrics_functions[i](y_validation, y_pred))
+
         # Append the batch metrics mean to training_metrics
         for i, (metric, list_) in enumerate(batch_train_metrics.items()):
             training_metrics[metric].append(np.mean(list_))
@@ -321,16 +329,13 @@ if __name__ == "__main__":
         # TODO:
         # - Activation / Loss backward check
         # - Loss + Activation output in the same class ?
-        # - Compute metrics on the validation set : accuracy, precision,
-        #   recall, f1-score
-        # - Confusion matrix : Need a fix
 
-    # ##################################### #
-    # Confusion Matrix                      #
-    # ##################################### #
+    # ###################################### #
+    # Confusion Matrix on the validation set #
+    # ###################################### #
 
     confusion_matrix_(
-        y_true=y_batch,
+        y_true=y_validation,
         y_hat=y_pred,
         labels=[1, 0],
         df_option=True
@@ -345,7 +350,8 @@ if __name__ == "__main__":
 
     # Accuracy evolution
     plot_metrics(
-        training_metrics=training_metrics
+        training_metrics=training_metrics,
+        validation_metrics=validation_metrics
     )
 
     # Plot the learning rate evolution

@@ -3,7 +3,7 @@ from ActivationFunctions.sigmoid import Sigmoid_Activation
 from ActivationFunctions.softmax import Softmax_Activation
 
 
-np.random.seed(42)
+# np.random.seed(42)
 
 
 class Dense_Layer:

@@ -1,14 +1,14 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    metrics.py                                         :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/08/24 14:39:43 by cmariot           #+#    #+#              #
-#    Updated: 2023/08/24 14:39:44 by cmariot          ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+# *************************************************************************** #
+#                                                                             #
+#                                                        :::      ::::::::    #
+#    metrics.py                                        :+:      :+:    :+:    #
+#                                                    +:+ +:+         +:+      #
+#    By: cmariot <cmariot@student.42.fr>           +#+  +:+       +#+         #
+#                                                +#+#+#+#+#+   +#+            #
+#    Created: 2023/08/24 14:39:43 by cmariot          #+#    #+#              #
+#    Updated: 2023/08/24 14:39:44 by cmariot         ###   ########.fr        #
+#                                                                             #
+# *************************************************************************** #
 
 import matplotlib.pyplot as plt
 
@@ -20,9 +20,12 @@ def plot_metrics(training_metrics: dict, validation_metrics: dict):
 
     try:
 
-        fig, ax = plt.subplots(2, 2)
+        fig, ax = plt.subplots(2, 2, figsize=(15, 8))
 
-        fig.suptitle("Metrics evolution, computed on the training and validation sets during the model training.")
+        fig.suptitle(
+            "Metrics evolution, computed on the training and " +
+            "validation sets during the model training."
+        )
 
         for i in range(2):
 
@@ -32,8 +35,17 @@ def plot_metrics(training_metrics: dict, validation_metrics: dict):
                 validation_values = validation_metrics[metric_name]
                 training_values = training_metrics[metric_name]
 
-                ax[i, j].plot(training_values, label=f"training {metric_name}", color='b', linestyle=':')
-                ax[i, j].plot(validation_values, label=f"validation {metric_name}", color='b')
+                ax[i, j].plot(
+                    training_values,
+                    label=f"training {metric_name}",
+                    color='b',
+                    linestyle=':'
+                )
+                ax[i, j].plot(
+                    validation_values,
+                    label=f"validation {metric_name}",
+                    color='b'
+                )
 
                 # Display the last value of the metric with the text method
                 ax[i, j].text(

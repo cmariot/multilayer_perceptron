@@ -1,14 +1,14 @@
-# ****************************************************************************#
-#                                                                             #
-#                                                         :::      ::::::::   #
-#    train.py                                           :+:      :+:    :+:   #
-#                                                     +:+ +:+         +:+     #
-#    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+        #
-#                                                 +#+#+#+#+#+   +#+           #
-#    Created: 2023/08/24 14:39:03 by cmariot           #+#    #+#             #
-#    Updated: 2023/08/24 14:39:04 by cmariot          ###   ########.fr       #
-#                                                                             #
-# ****************************************************************************#
+# ************************************************************************** #
+#                                                                            #
+#                                                       :::      ::::::::    #
+#    train.py                                         :+:      :+:    :+:    #
+#                                                   +:+ +:+         +:+      #
+#    By: cmariot <cmariot@student.42.fr>          +#+  +:+       +#+         #
+#                                               +#+#+#+#+#+   +#+            #
+#    Created: 2023/08/24 14:39:03 by cmariot         #+#    #+#              #
+#    Updated: 2023/08/24 14:39:04 by cmariot        ###   ########.fr        #
+#                                                                            #
+# ************************************************************************** #
 
 from os import get_terminal_size
 from time import time
@@ -18,7 +18,6 @@ from get_datasets import (get_training_data,
                           get_validation_data,
                           dataset_loaded_message)
 from parse_arguments import parse_arguments
-from Loss.binary_cross_entropy import BinaryCrossEntropy_Loss
 from Plots.loss import plot_loss
 from Plots.metrics import plot_metrics
 from Plots.learning_rate import plot_learning_rate
@@ -46,7 +45,11 @@ def header():
 """)
 
 
-def metrics_dict():
+def metrics_dictionary():
+    """
+    Return a dictionary with the metrics as keys and empty lists as values.
+    Used to store the metrics that will be plotted.
+    """
     return {
         "accuracy": [],
         "precision": [],
@@ -128,13 +131,19 @@ if __name__ == "__main__":
 
     header()
 
+    # TODO:
+    # - Add a help for each hyperparameter
+    # - Dataset path as argument
+
     (
-        layers,           # Number of outputs in each layer
+        n_neurons,        # Number of neurons in each layer
         activations,      # Activation function in each layer
         loss_name,        # Loss function
         epochs,           # Number of epochs
         batch_size,       # Batch size
-        learning_rate     # Learning rate
+        learning_rate,    # Initial learning rate
+        decay,            # How much the learning rate decreases over time
+        momentum          # Avoid local minima and speed up SGD
     ) = parse_arguments()
 
     # ############################################### #
@@ -161,13 +170,12 @@ if __name__ == "__main__":
         y_validation
     ) = get_validation_data("../datasets/validation.csv", x_min, x_max)
 
+    # TODO:
+    # - Single message during the MultiLayerPerceptron class creation
     (
         n_features,
         n_train_samples
     ) = dataset_loaded_message(x_train_norm, x_validation_norm)
-
-    # Press enter to continue
-    input("Press enter to create the neural network ...\n")
 
     # ################################################# #
     # Create the neural network :                       #
@@ -178,18 +186,26 @@ if __name__ == "__main__":
     # - Output layer   : softmax 24 inputs /  2 outputs #
     # ################################################# #
 
-    multilayer_perceptron = MultiLayerPerceptron(
-        n_features=n_features,
-        layers=layers,
-        activations=activations,
-        learning_rate=learning_rate,
-        decay=0.0005,   # Decay : learning_rate decreases over time
-        momentum=0.05,  # Momentum : avoid local minima and speed up SGD
-        batch_size=batch_size,
-        n_train_samples=n_train_samples
-    )
+    # TODO:
+    # Fine tune the hyperparameters :
+    # - Number of epochs
+    # - Initial learning rate
+    # - Decay
+    # - Momentum
+    # - Batch size
+    # - Number of neurons in each layer
 
-    loss_function = BinaryCrossEntropy_Loss()
+    multilayer_perceptron = MultiLayerPerceptron(
+        n_features=n_features,            # Number of inputs in the first layer
+        n_neurons=n_neurons,              # Number of outputs in each layer
+        activations=activations,          # Activation function in each layer
+        learning_rate=learning_rate,      # Learning rate
+        decay=decay,                      # Learning_rate decreases over time
+        momentum=momentum,                # Avoid local minima and speed up SGD
+        batch_size=batch_size,            # Batch size
+        n_train_samples=n_train_samples,  # Training set size
+        loss_name=loss_name               # Loss function
+    )
 
     # ##################################### #
     # Train the neural network              #
@@ -197,6 +213,12 @@ if __name__ == "__main__":
 
     input("Press enter to train the model...\n")
 
+    # Variables used to save the metrics for the plots
+    losses_training = []
+    losses_validation = []
+    learning_rates = []
+    training_metrics = metrics_dictionary()
+    validation_metrics = metrics_dictionary()
     metrics_functions = [
         accuracy_score_,
         precision_score_,
@@ -204,18 +226,11 @@ if __name__ == "__main__":
         f1_score_
     ]
 
-    losses_training = []
-    losses_validation = []
-    learning_rates = []
-    training_metrics = metrics_dict()
-    validation_metrics = metrics_dict()
-
     for epoch in ft_progress(range(epochs)):
 
         batch_losses = []
-
-        batch_train_metrics = metrics_dict()
-        batch_validation_metrics = metrics_dict()
+        batch_train_metrics = metrics_dictionary()
+        batch_validation_metrics = metrics_dictionary()
 
         for i in range(multilayer_perceptron.n_batch):
 
@@ -223,36 +238,28 @@ if __name__ == "__main__":
                 x_train_norm, y_train, i, batch_size
             )
 
-            # Forward pass
-            last_layer_output = multilayer_perceptron.forward(x_batch)
-
-            # Get predictions
-            y_pred = np.argmax(last_layer_output, axis=1).reshape(-1, 1)
-
-            # Compute the loss
-            loss = loss_function.forward(y_pred, y_batch)
+            output = multilayer_perceptron.forward(x_batch)
+            y_hat = multilayer_perceptron.predict(output)
+            loss = multilayer_perceptron.loss(y_hat, y_batch)
 
             # Compute metrics on the training set
-            for i, (metric, list_) in enumerate(batch_train_metrics.items()):
-                list_.append(metrics_functions[i](y_batch, y_pred))
-
-            # Save the current loss, used for the plot
             batch_losses.append(loss)
+            for i, (metric, list_) in enumerate(batch_train_metrics.items()):
+                list_.append(metrics_functions[i](y_batch, y_hat))
 
-            # calculating the derivative of cost with respect to some weight
-            dcost = loss_function.gradient(last_layer_output, y_batch)
+            gradient = multilayer_perceptron.gradient(output, y_batch)
+            multilayer_perceptron.backward(gradient)
 
-            # Backpropagation
-            multilayer_perceptron.backward(dcost)
-
-            # Update the learning rate
+            # TODO:
+            # - Check if the update_learning_rate method needs to be called
+            #   in the epoch loop or in the batch loop
+            # - Check if the update_iterations method needs to be called
+            #   in the epoch loop or in the batch loop
+            # - Test the two options with different hyperparameters
             multilayer_perceptron.update_learning_rate()
+            multilayer_perceptron.gradient_descent()
 
-            # Update the weights and the biases
-            multilayer_perceptron.update_parameters()
-
-            # Update the iterations
-            multilayer_perceptron.update_iterations()
+        multilayer_perceptron.update_iterations()
 
         # #################### #
         # Training set metrics #
@@ -269,6 +276,10 @@ if __name__ == "__main__":
         # Learning rate #
         # ############# #
 
+        # TODO:
+        # - Can be done in the update_learning_rate method
+        # - Store the learning rate in the MultiLayerPerceptron class
+
         # Save the current learning rate
         learning_rates.append(
             multilayer_perceptron.layers[0].current_learning_rate
@@ -279,28 +290,45 @@ if __name__ == "__main__":
         # ###################### #
 
         # Compute metrics on the validation set
-        last_layer_output = multilayer_perceptron.forward(
+        output = multilayer_perceptron.forward(
             x_validation_norm
         )
-        y_pred = np.argmax(last_layer_output, axis=1).reshape(-1, 1)
+
+        y_hat = multilayer_perceptron.predict(output)
 
         # Compute the loss for the validation set
         losses_validation.append(
-            loss_function.forward(y_pred, y_validation)
+            multilayer_perceptron.loss(y_hat, y_validation)
         )
 
         # Compute other metrics on the validation set
         for i, (metric, list_) in enumerate(validation_metrics.items()):
-            list_.append(metrics_functions[i](y_validation, y_pred))
+            list_.append(metrics_functions[i](y_validation, y_hat))
 
         # TODO:
         # - Activation / Loss backward check
         # - Loss + Activation output in the same class ?
 
+    # ###################################### #
+    # Confusion Matrix on the validation set #
+    # ###################################### #
+
+    confusion_matrix_(
+        y_true=y_validation,
+        y_hat=y_hat,
+        labels=["Malignant", "Benign"],
+        df_option=True
+    )
+
     # ############################### #
     # Final metrics on validation set #
     # ############################### #
 
+    # TODO:
+    # - Function
+    # - Better title
+    # - Do not print the index
+    # - Add a description for each metric
     final_validation_metrics = {
         "accuracy": validation_metrics["accuracy"][-1],
         "precision": validation_metrics["precision"][-1],
@@ -315,17 +343,6 @@ if __name__ == "__main__":
     )
     print("\n", df_metrics)
 
-    # ###################################### #
-    # Confusion Matrix on the validation set #
-    # ###################################### #
-
-    confusion_matrix_(
-        y_true=y_validation,
-        y_hat=y_pred,
-        labels=["Malignant", "Benign"],
-        df_option=True
-    )
-
     # ##################################### #
     # Plots                                 #
     # ##################################### #
@@ -334,10 +351,15 @@ if __name__ == "__main__":
     plot_loss(losses_training, losses_validation)
 
     # Accuracy evolution
-    plot_metrics(
-        training_metrics=training_metrics,
-        validation_metrics=validation_metrics
-    )
+    plot_metrics(training_metrics, validation_metrics)
 
     # Plot the learning rate evolution
     plot_learning_rate(learning_rates)
+
+    # ##################################### #
+    # Save the model                        #
+    # ##################################### #
+
+    # TODO:
+    # - Save the model
+    # - Bonus: Different opimizers

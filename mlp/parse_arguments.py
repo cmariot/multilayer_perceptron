@@ -18,6 +18,20 @@ def parse_arguments():
         parser = argparse.ArgumentParser()
 
         parser.add_argument(
+            "--train_path",
+            type=str,
+            help="Path to the train dataset",
+            default="../datasets/train.csv"
+        )
+
+        parser.add_argument(
+            "--validation_path",
+            type=str,
+            help="Path to the validation dataset",
+            default="../datasets/validation.csv"
+        )
+
+        parser.add_argument(
             "--n_neurons",
             type=int,
             nargs="+",
@@ -36,48 +50,51 @@ def parse_arguments():
         parser.add_argument(
             "--loss",
             type=str,
-            help="Loss function",
+            help="Name of the loss function to use",
             default="binaryCrossentropy"
         )
 
         parser.add_argument(
             "--epochs",
             type=int,
-            help="Number of epochs",
+            help="Number of epochs to train the model",
             default=80
         )
 
         parser.add_argument(
             "--batch_size",
             type=int,
-            help="Batch size",
-            default=32
+            help="Size of the batch used to train the model",
+            default=8
         )
 
         parser.add_argument(
             "--learning_rate",
             type=float,
-            help="Learning rate",
+            help="Initial learning rate of the model",
             default=0.005
         )
 
         parser.add_argument(
             "--decay",
             type=float,
-            help="Decay",
-            default=0.005
+            help="Decay of the learning rate, used to reduce it over time",
+            default=0.01
         )
 
         parser.add_argument(
             "--momentum",
             type=float,
-            help="Momentum",
-            default=0.005
+            help="Momentum of the model, used to accelerate the learning" +
+            " and avoid local minima",
+            default=0.007
         )
 
         args = parser.parse_args()
 
         return (
+            args.train_path,
+            args.validation_path,
             args.n_neurons,
             args.activations,
             args.loss,

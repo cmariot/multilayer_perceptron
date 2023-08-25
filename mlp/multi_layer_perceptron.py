@@ -69,6 +69,8 @@ class MultiLayerPerceptron:
             if n_train_samples % batch_size != 0:
                 self.n_batch += 1
 
+            self.learning_rates = [self.layers[0].learning_rate]
+
         except Exception:
 
             print("Error: cannot create the layer list.")
@@ -115,6 +117,10 @@ class MultiLayerPerceptron:
         """
         for layer in self.layers:
             layer.update_learning_rate()
+            layer.update_iterations()
+        self.learning_rates.append(
+            self.layers[0].current_learning_rate
+        )
 
     def gradient_descent(self):
         """
@@ -122,10 +128,3 @@ class MultiLayerPerceptron:
         """
         for layer in self.layers:
             layer.gradient_descent()
-
-    def update_iterations(self):
-        """
-        Update iterations.
-        """
-        for layer in self.layers:
-            layer.update_iterations()

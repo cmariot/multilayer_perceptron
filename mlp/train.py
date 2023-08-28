@@ -98,6 +98,15 @@ if __name__ == "__main__":
     # ################################################# #
 
     # TODO:
+    # - The neural network seems work, but if i change hyperparameters,
+    #   it doesn't. I need to check if everything is ok.
+    #       - Forward
+    #       - Loss
+    #       - Gradient
+    #       - Backward
+    # - Loss + Activation output in the same class ?
+    # - Decay check
+    # - Momentum check
     # - Fine tune the hyperparameters :
     #   - Number of epochs
     #   - Initial learning rate
@@ -107,8 +116,9 @@ if __name__ == "__main__":
     #   - Number of neurons in each layer
     # - Single message during the MultiLayerPerceptron class creation
     # - MultiLayerPerceptron init message as pandas dataframe
-    # - Activation / Loss backward check
-    # - Loss + Activation output in the same class ?
+    # - Save the model
+    # - Load the model (weights and biases)
+    # - Predict
 
     multilayer_perceptron = MultiLayerPerceptron(
         n_features=n_features,            # Number of inputs in the first layer

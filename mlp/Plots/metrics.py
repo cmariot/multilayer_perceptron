@@ -16,6 +16,10 @@ import matplotlib.pyplot as plt
 def plot_metrics(training_metrics: dict, validation_metrics: dict):
     """
     Plot the metrics evolution.
+    - Accuracy
+    - Precision
+    - Recall
+    - F1-Score
     """
 
     try:

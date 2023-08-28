@@ -15,9 +15,6 @@ from ActivationFunctions.sigmoid import Sigmoid_Activation
 from ActivationFunctions.softmax import Softmax_Activation
 
 
-np.random.seed(42)
-
-
 class Dense_Layer:
     """
     A dense layer is a layer where each perceptron is connected to

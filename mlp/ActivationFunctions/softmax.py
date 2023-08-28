@@ -16,13 +16,8 @@ import numpy as np
 class Softmax_Activation:
 
     def forward(self, input):
-        self.input = input
-        exp_values = np.exp(
-            input - np.max(input, axis=1, keepdims=True)
-        )
-        self.output = exp_values / np.sum(
-            exp_values, axis=1, keepdims=True
-        )
+        exp = np.exp(input)
+        self.output = exp / np.sum(exp, axis=1, keepdims=True)
         return self.output
 
     def backward(self, dvalues):

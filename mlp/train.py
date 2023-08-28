@@ -136,15 +136,14 @@ if __name__ == "__main__":
     # Train the neural network              #
     # ##################################### #
 
-    input("Press enter to train the model...\n")
-
     # Variables used to save the metrics for the plots
     losses_training = []
     losses_validation = []
     training_metrics = metrics_dictionary()
     validation_metrics = metrics_dictionary()
 
-    input("Press enter to train the neural network ...\n")
+    input("Press enter to train the model...\n")
+
     for epoch in ft_progress(range(epochs)):
 
         batch_losses = []
@@ -153,7 +152,7 @@ if __name__ == "__main__":
 
         for i in range(multilayer_perceptron.n_batch):
 
-            x_batch, y_batch = get_batch(x_train_norm, y_train, i, batch_size)
+            x_batch, y_batch = get_batch(x_train_norm, y_train, batch_size)
 
             # Forward pass
             output = multilayer_perceptron.forward(x_batch)

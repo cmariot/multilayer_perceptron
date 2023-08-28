@@ -48,7 +48,15 @@ class Dense_Layer:
         """
 
         try:
-            self.weights = np.random.randn(n_inputs, n_neurons) * 0.01
+            # heUniform initialization
+            self.weights = np.random.randn(n_inputs, n_neurons) * \
+                np.sqrt(2 / n_inputs)
+
+            # Plot the distribution of the initial layer's weights
+            # import matplotlib.pyplot as plt
+            # plt.hist(self.weights.flatten())
+            # plt.show()
+
             self.biases = np.ones((1, n_neurons))
             self.activation = self.activation_function[activation]()
             self.learning_rate = learning_rate
@@ -62,16 +70,16 @@ class Dense_Layer:
             print("Error (init Dense_Layer) :", e)
             exit()
 
-    def update_learning_rate(self):
-        if self.decay > 0.0:
-            self.current_learning_rate = self.learning_rate * \
-                (1.0 / (1.0 + self.decay * self.iterations))
-
     def forward(self, inputs):
         self.inputs = inputs
         self.weighted_sum = np.dot(inputs, self.weights) + self.biases
         self.output = self.activation.forward(self.weighted_sum)
         return self.output
+
+    def update_learning_rate(self):
+        if self.decay > 0.0:
+            self.current_learning_rate = self.learning_rate * \
+                (1.0 / (1.0 + self.decay * self.iterations))
 
     def update_iterations(self):
         self.iterations += 1

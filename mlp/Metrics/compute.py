@@ -3,6 +3,7 @@ from Metrics.accuracy import accuracy_score_
 from Metrics.f1_score import f1_score_
 from Metrics.precision import precision_score_
 from Metrics.recall import recall_score_
+import numpy as np
 
 
 def metrics_dictionary():
@@ -30,14 +31,12 @@ def compute_metrics(metrics_dictionary, y, y_hat):
         list_.append(metrics_functions[i](y, y_hat))
 
 
-def get_batch(x, y, i, batch_size):
-    start = i * batch_size
-    end = (i + 1) * batch_size
-    if end > x.shape[0]:
-        end = x.shape[0]
-    x_batch = x[start:end]
-    y_batch = y[start:end]
-    return x_batch, y_batch
+def get_batch(x, y, batch_size):
+    full = np.concatenate((x, y), axis=1)
+    np.random.shuffle(full)
+    x_batch = full[0:batch_size, :-1]
+    y_batch = full[0:batch_size, -1]
+    return x_batch, y_batch.reshape(-1, 1)
 
 
 def print_final_metrics(metrics_dictionary):
@@ -53,7 +52,7 @@ def print_final_metrics(metrics_dictionary):
         index=[None],
     )
 
-    # Simple description of the metrics
+    # Description of the metrics
     description = {
         "accuracy": "(TP + TN) / total",
         "precision": "(TP) / (TP + FP)",

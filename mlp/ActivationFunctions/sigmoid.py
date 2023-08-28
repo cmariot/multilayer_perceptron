@@ -10,23 +10,22 @@
 #                                                                             #
 # *************************************************************************** #
 
-from numpy import exp
-
+import numpy as np
 
 class Sigmoid_Activation:
 
     def forward(self, input):
         """
         Sigmoid activation function
-        Each input is transformed into a value between 0 and 1
+        Return an output in range 0 (for negative values) to 1 (for positive values
+        It adds non-linearity to the network
         """
-        self.input = input
-        self.output = 1 / (1 + exp(-input))
+        self.output = 1 / (1 + np.exp(-input))
         return self.output
 
     def backward(self, dvalues):
         """
         Derivative of the sigmoid function
         """
-        self.dinput = dvalues * (1 - self.output) * self.output
-        return self.dinput
+        self.dinputs = dvalues * (1 - self.output) * self.output
+        return self.dinputs

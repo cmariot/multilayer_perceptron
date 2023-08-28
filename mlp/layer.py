@@ -1,21 +1,18 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    layer.py                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/08/24 14:39:39 by cmariot           #+#    #+#              #
-#    Updated: 2023/08/24 14:39:40 by cmariot          ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+# *************************************************************************** #
+#                                                                             #
+#                                                        :::      ::::::::    #
+#    layer.py                                          :+:      :+:    :+:    #
+#                                                    +:+ +:+         +:+      #
+#    By: cmariot <cmariot@student.42.fr>           +#+  +:+       +#+         #
+#                                                +#+#+#+#+#+   +#+            #
+#    Created: 2023/08/24 14:39:39 by cmariot          #+#    #+#              #
+#    Updated: 2023/08/24 19:50:53 by cmariot         ###   ########.fr        #
+#                                                                             #
+# *************************************************************************** #
 
 import numpy as np
 from ActivationFunctions.sigmoid import Sigmoid_Activation
 from ActivationFunctions.softmax import Softmax_Activation
-
-
-np.random.seed(42)
 
 
 class Dense_Layer:
@@ -86,7 +83,7 @@ class Dense_Layer:
         self.dinputs = np.dot(dvalues, self.weights.T)
         return self.dinputs
 
-    def update(self):
+    def gradient_descent(self):
         weight_updates = self.momentum * self.weight_momentums - \
             self.current_learning_rate * self.dweights
         self.weight_momentums = weight_updates

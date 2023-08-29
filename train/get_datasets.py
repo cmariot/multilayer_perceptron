@@ -111,28 +111,3 @@ def get_validation_data(
     except Exception:
         print("Error: can't get the validation data.")
         exit()
-
-
-def dataset_loaded_message(x_train_norm, x_validation_norm):
-    """
-    Print a message with the number of features, training samples
-    and validation samples.
-    Return usefull variables.
-    """
-
-    try:
-
-        n_features = x_train_norm.shape[1]
-        n_train_samples = x_train_norm.shape[0]
-        n_validation_samples = x_validation_norm.shape[0]
-
-        print("Datasets loaded and normalized.\n\n" +
-              f"Number of features: {n_features}\n" +
-              f"Number of training samples: {n_train_samples}\n" +
-              f"Number of validation samples: {n_validation_samples}\n")
-
-        return n_features, n_train_samples
-
-    except Exception:
-        print("Error: can't print the dataset loaded message.")
-        exit()

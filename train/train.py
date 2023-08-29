@@ -12,14 +12,13 @@
 
 import numpy as np
 from get_datasets import (get_training_data,
-                          get_validation_data,
-                          dataset_loaded_message)
+                          get_validation_data)
 from parse_arguments import parse_arguments
 from multi_layer_perceptron import MultiLayerPerceptron
 from ft_progress import ft_progress
 from Metrics.compute import (metrics_dictionary,
-                             compute_metrics,
                              get_batch,
+                             compute_metrics,
                              print_final_metrics)
 from Metrics.confusion_matrix import confusion_matrix_
 from Plots.loss import plot_loss
@@ -83,10 +82,8 @@ if __name__ == "__main__":
         y_validation
     ) = get_validation_data(validation_path, x_min, x_max)
 
-    (
-        n_features,
-        n_train_samples
-    ) = dataset_loaded_message(x_train_norm, x_validation_norm)
+    n_features = x_train_norm.shape[1]
+    n_train_samples = x_train_norm.shape[0]
 
     # ################################################# #
     # Create the neural network :                       #
@@ -100,10 +97,11 @@ if __name__ == "__main__":
     # TODO:
     # - The neural network seems work, but if i change hyperparameters,
     #   it doesn't. I need to check if everything is ok.
-    #       - Forward
-    #       - Loss
-    #       - Gradient
-    #       - Backward
+    #       - Activation : sigmoid, softmax (forward)
+    #       - Forward pass
+    #       - Loss function : BinaryCrossEntropy (forward)
+    #       - Gradient : BinaryCrossEntropy (backward)
+    #       - Backward pass
     # - Loss + Activation output in the same class ?
     # - Decay check
     # - Momentum check
@@ -114,8 +112,6 @@ if __name__ == "__main__":
     #   - Momentum
     #   - Batch size
     #   - Number of neurons in each layer
-    # - Single message during the MultiLayerPerceptron class creation
-    # - MultiLayerPerceptron init message as pandas dataframe
     # - Save the model
     # - Load the model (weights and biases)
     # - Predict
@@ -204,7 +200,7 @@ if __name__ == "__main__":
     # Final metrics on validation set #
     # ############################### #
 
-    print_final_metrics(validation_metrics)
+    # print_final_metrics(validation_metrics)
 
     # ##################################### #
     # Plots                                 #

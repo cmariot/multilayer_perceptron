@@ -1,14 +1,14 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    parse_arguments.py                                 :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/08/24 14:39:26 by cmariot           #+#    #+#              #
-#    Updated: 2023/08/28 16:35:57 by cmariot          ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+# *************************************************************************** #
+#                                                                             #
+#                                                        :::      ::::::::    #
+#    parse_arguments.py                                :+:      :+:    :+:    #
+#                                                    +:+ +:+         +:+      #
+#    By: cmariot <cmariot@student.42.fr>           +#+  +:+       +#+         #
+#                                                +#+#+#+#+#+   +#+            #
+#    Created: 2023/08/24 14:39:26 by cmariot          #+#    #+#              #
+#    Updated: 2023/08/28 16:35:57 by cmariot         ###   ########.fr        #
+#                                                                             #
+# *************************************************************************** #
 
 import argparse
 
@@ -65,21 +65,21 @@ def parse_arguments():
             "--batch_size",
             type=int,
             help="Size of the batch used to train the model",
-            default=32
+            default=64
         )
 
         parser.add_argument(
             "--learning_rate",
             type=float,
             help="Initial learning rate of the model",
-            default=0.01
+            default=0.001
         )
 
         parser.add_argument(
             "--decay",
             type=float,
             help="Decay of the learning rate, used to reduce it over time",
-            default=0.005
+            default=0.0001
         )
 
         parser.add_argument(
@@ -87,7 +87,7 @@ def parse_arguments():
             type=float,
             help="Momentum of the model, used to accelerate the learning" +
             " and avoid local minima",
-            default=0.005
+            default=0.0001
         )
 
         args = parser.parse_args()

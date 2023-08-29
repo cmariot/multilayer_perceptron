@@ -14,6 +14,7 @@
 from layer import Dense_Layer
 import numpy as np
 from Loss.binary_cross_entropy import BinaryCrossEntropy_Loss
+import pandas
 
 
 losses = {
@@ -36,6 +37,8 @@ class MultiLayerPerceptron:
             loss_name):
 
         try:
+
+            # Create the layer list
             self.layers = []
             n_layers = len(n_neurons)
             for i in range(n_layers):
@@ -50,29 +53,40 @@ class MultiLayerPerceptron:
                         momentum=momentum
                     )
                 )
-                type = "Input" if i == 0 \
-                    else "Hidden" if i < n_layers - 1 \
-                    else "Output"
-                print(f"{type} layer created.\n" +
-                      f"Number of inputs: {n_input}\n" +
-                      f"Number of neurons: {n_neurons[i]}\n" +
-                      f"Activation function: {activations[i]}\n" +
-                      f"Learning rate: {learning_rate}\n")
 
+            # Create the loss function
             if loss_name in losses:
                 self.loss_function = losses[loss_name]()
             else:
                 print("Error: unknown loss function.")
                 exit()
 
+            # Compute the number of batches
             self.n_batch = n_train_samples // batch_size
             if n_train_samples % batch_size != 0:
                 self.n_batch += 1
 
-            self.learning_rates = [self.layers[0].learning_rate]
+            # Create a list to save the learning rates
+            self.learning_rates = []
+
+            # Print the layer list in a dataframe
+            df = {
+                "Number of inputs": [n_features] + n_neurons[:-1],
+                "Number of neurons": n_neurons,
+                "Weight initialization": ["heUniform"] * n_layers,
+                "Bias initialization": ["ones"] * n_layers,
+                "Activation function": activations,
+                "Learning rate": [learning_rate] * n_layers,
+                "Decay": [decay] * n_layers,
+                "Momentum": [momentum] * n_layers
+            }
+            index = ["Input Layer"] + \
+                [f"Hidden Layer {i + 1}" for i in range(n_layers - 2)] \
+                + ["Output Layer"]
+            df = pandas.DataFrame(df, index=index).transpose()
+            print(df, "\n")
 
         except Exception:
-
             print("Error: cannot create the layer list.")
             exit()
 

@@ -57,7 +57,7 @@ class Dense_Layer:
             # plt.hist(self.weights.flatten())
             # plt.show()
 
-            self.biases = np.ones((1, n_neurons))
+            self.biases = np.zeros((1, n_neurons))
             self.activation = self.activation_function[activation]()
             self.learning_rate = learning_rate
             self.current_learning_rate = learning_rate

@@ -150,51 +150,51 @@ if __name__ == "__main__":
 
             x_batch, y_batch = get_batch(x_train_norm, y_train, batch_size)
 
-            # Forward pass
+    #         # Forward pass
             output = multilayer_perceptron.forward(x_batch)
-            y_hat = multilayer_perceptron.predict(output)
-            loss = multilayer_perceptron.loss(y_hat, y_batch)
+    #         y_hat = multilayer_perceptron.predict(output)
+    #         loss = multilayer_perceptron.loss(y_hat, y_batch)
 
-            # Compute metrics on the training set
-            batch_losses.append(loss)
-            compute_metrics(batch_train_metrics, y_batch, y_hat)
+    #         # Compute metrics on the training set
+    #         batch_losses.append(loss)
+    #         compute_metrics(batch_train_metrics, y_batch, y_hat)
 
-            # Backward pass
-            gradient = multilayer_perceptron.gradient(output, y_batch)
-            multilayer_perceptron.backward(gradient)
-            multilayer_perceptron.gradient_descent()
+    #         # Backward pass
+    #         gradient = multilayer_perceptron.gradient(output, y_batch)
+    #         multilayer_perceptron.backward(gradient)
+    #         multilayer_perceptron.gradient_descent()
 
-        multilayer_perceptron.update_learning_rate()
+    #     multilayer_perceptron.update_learning_rate()
 
         # #################### #
         # Training set metrics #
         # #################### #
 
-        losses_training.append(np.mean(batch_losses))
-        for i, (metric, list_) in enumerate(batch_train_metrics.items()):
-            training_metrics[metric].append(np.mean(list_))
+        # losses_training.append(np.mean(batch_losses))
+        # for i, (metric, list_) in enumerate(batch_train_metrics.items()):
+        #     training_metrics[metric].append(np.mean(list_))
 
         # ##################################### #
         # Validation set metrics :              #
         # Compute metrics on the validation set #
         # ##################################### #
 
-        output = multilayer_perceptron.forward(x_validation_norm)
-        y_hat = multilayer_perceptron.predict(output)
-        loss = multilayer_perceptron.loss(y_hat, y_validation)
-        losses_validation.append(loss)
-        compute_metrics(validation_metrics, y_validation, y_hat)
+        # output = multilayer_perceptron.forward(x_validation_norm)
+        # y_hat = multilayer_perceptron.predict(output)
+        # loss = multilayer_perceptron.loss(y_hat, y_validation)
+        # losses_validation.append(loss)
+        # compute_metrics(validation_metrics, y_validation, y_hat)
 
     # ###################################### #
     # Confusion Matrix on the validation set #
     # ###################################### #
 
-    confusion_matrix_(
-        y_true=y_validation,
-        y_hat=y_hat,
-        labels=["Malignant", "Benign"],
-        df_option=True
-    )
+    # confusion_matrix_(
+    #     y_true=y_validation,
+    #     y_hat=y_hat,
+    #     labels=["Malignant", "Benign"],
+    #     df_option=True
+    # )
 
     # ############################### #
     # Final metrics on validation set #
@@ -206,9 +206,9 @@ if __name__ == "__main__":
     # Plots                                 #
     # ##################################### #
 
-    plot_loss(losses_training, losses_validation)
-    plot_metrics(training_metrics, validation_metrics)
-    plot_learning_rate(multilayer_perceptron.learning_rates)
+    # plot_loss(losses_training, losses_validation)
+    # plot_metrics(training_metrics, validation_metrics)
+    # plot_learning_rate(multilayer_perceptron.learning_rates)
 
     # ##################################### #
     # Save the model                        #

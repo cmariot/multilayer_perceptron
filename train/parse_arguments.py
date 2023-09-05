@@ -58,28 +58,28 @@ def parse_arguments():
             "--epochs",
             type=int,
             help="Number of epochs to train the model",
-            default=200
+            default=2000
         )
 
         parser.add_argument(
             "--batch_size",
             type=int,
             help="Size of the batch used to train the model",
-            default=64
+            default=256
         )
 
         parser.add_argument(
             "--learning_rate",
             type=float,
             help="Initial learning rate of the model",
-            default=0.001
+            default=0.0001
         )
 
         parser.add_argument(
             "--decay",
             type=float,
             help="Decay of the learning rate, used to reduce it over time",
-            default=0.0001
+            default=0.01
         )
 
         parser.add_argument(
@@ -87,7 +87,7 @@ def parse_arguments():
             type=float,
             help="Momentum of the model, used to accelerate the learning" +
             " and avoid local minima",
-            default=0.0001
+            default=0.0
         )
 
         args = parser.parse_args()

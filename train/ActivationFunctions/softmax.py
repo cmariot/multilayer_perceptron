@@ -17,7 +17,7 @@ class Softmax_Activation:
 
     def forward(self, input):
         exp = np.exp(input)
-        self.output = exp / exp.sum()
+        self.output = exp / np.sum(exp, axis=1, keepdims=True)
         return self.output
 
     def backward(self, dvalues):

@@ -29,7 +29,7 @@ class Sigmoid_Activation:
         """
         Derivative of the sigmoid function
         """
-        self.dinputs = (1 - self.output) * self.output
+        self.dinputs = dvalues * (1 - self.output) * self.output
         return self.dinputs
 
 

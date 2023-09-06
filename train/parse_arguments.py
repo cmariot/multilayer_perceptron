@@ -72,14 +72,14 @@ def parse_arguments():
             "--learning_rate",
             type=float,
             help="Initial learning rate of the model",
-            default=0.0001
+            default=0.001
         )
 
         parser.add_argument(
             "--decay",
             type=float,
             help="Decay of the learning rate, used to reduce it over time",
-            default=0.01
+            default=0.0
         )
 
         parser.add_argument(

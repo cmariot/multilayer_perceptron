@@ -95,16 +95,13 @@ if __name__ == "__main__":
     # ################################################# #
 
     # TODO:
-    # - The neural network seems work, but if i change hyperparameters,
-    #   it doesn't. I need to check if everything is ok.
-    #       - Activation : sigmoid, softmax (forward)
-    #       - Forward pass
+    # - I need to check if everything is ok.
     #       - Loss function : BinaryCrossEntropy (forward)
     #       - Gradient : BinaryCrossEntropy (backward)
     #       - Backward pass
+    #       - Decay check
+    #       - Momentum check
     # - Loss + Activation output in the same class ?
-    # - Decay check
-    # - Momentum check
     # - Fine tune the hyperparameters :
     #   - Number of epochs
     #   - Initial learning rate
@@ -216,5 +213,5 @@ if __name__ == "__main__":
     # ##################################### #
 
     # TODO:
-    # - Save the model
+    # - Save the model (weights, biases)
     # - Bonus: Different opimizers

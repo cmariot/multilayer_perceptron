@@ -14,11 +14,13 @@
 from layer import Dense_Layer
 import numpy as np
 from Loss.binary_cross_entropy import BinaryCrossEntropy_Loss
+from Loss.categorical_cross_entropy import CategoricalCrossEntropy_Loss
 import pandas
 
 
 losses = {
-    "binaryCrossentropy": BinaryCrossEntropy_Loss
+    "binaryCrossentropy": BinaryCrossEntropy_Loss,
+    "categoricalCrossEntropy": CategoricalCrossEntropy_Loss
 }
 
 

@@ -151,7 +151,7 @@ if __name__ == "__main__":
             output = multilayer_perceptron.forward(x_batch)
             y_hat = multilayer_perceptron.predict(output)
 
-            loss = multilayer_perceptron.loss(y_hat, y_batch)
+            loss = multilayer_perceptron.loss(output, y_batch)
 
             # Compute metrics on the training set
             batch_losses.append(loss)

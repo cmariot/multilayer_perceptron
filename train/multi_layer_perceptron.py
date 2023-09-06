@@ -111,7 +111,7 @@ class MultiLayerPerceptron:
         """
         Loss.
         """
-        return self.loss_function.forward(y_hat, y)
+        return self.loss_function.calculate(y_hat, y)
 
     def gradient(self, output, y):
         """

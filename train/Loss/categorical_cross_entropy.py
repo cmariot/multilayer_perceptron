@@ -23,5 +23,6 @@ class CategoricalCrossEntropy_Loss(Loss):
         negative_log_likelihoods = -np.log(correct_confidences)
         return negative_log_likelihoods
 
-    def backward(self, dvalues, eps=1e-15):
-        pass
+    def gradient(self, dvalues, eps=1e-15):
+        dvalues = np.clip(dvalues, eps, 1 - eps)
+        return dvalues

@@ -11,9 +11,10 @@
 # *************************************************************************** #
 
 import numpy as np
+from .loss import Loss
 
 
-class BinaryCrossEntropy_Loss:
+class BinaryCrossEntropy_Loss(Loss):
 
     def forward(self, y_pred, y_true, eps=1e-15):
         """
@@ -26,8 +27,9 @@ class BinaryCrossEntropy_Loss:
             float: The binary cross entropy loss.
         """
         y_pred_clipped = np.clip(y_pred, eps, 1 - eps)
-        return np.mean(-(y_true * np.log(y_pred_clipped) +
-                         (1 - y_true) * np.log(1 - y_pred_clipped)))
+        sample_loss = -(y_true * np.log(y_pred_clipped) + (1 - y_true) * np.log(1 - y_pred_clipped))
+        sample_loss = np.mean(sample_loss, axis=-1)
+        return sample_loss
 
     def gradient(self, dvalues, y_true, eps=1e-15):
         """
@@ -39,5 +41,9 @@ class BinaryCrossEntropy_Loss:
         Returns:
             np.array: The gradient of the loss function.
         """
-        y_pred_clipped = np.clip(dvalues, eps, 1 - eps)
-        return -(y_true / y_pred_clipped - (1 - y_true) / (1 - y_pred_clipped))
+        samples = len(dvalues)
+        outputs = len(dvalues[0])
+        clipped_dvalues = np.clip(dvalues, eps, 1 - eps)
+        self.dinputs = -(y_true / clipped_dvalues - (1 - y_true) / (1 - clipped_dvalues)) / outputs
+        self.dinputs = self.dinputs / samples
+        return self.dinputs

@@ -1,4 +1,4 @@
-from Layer import Layer
+from layer import Layer
 
 
 class MultilayerPerceptron:

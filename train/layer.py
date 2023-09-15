@@ -1,13 +1,30 @@
 import numpy as np
 from single_neuron import SingleNeuron
 from nnfs.datasets import spiral_data
+from Activation.linear import LinearActivation
+from Activation.relu import ReluActivation
+from Activation.sigmoid import SigmoidActivation
+from Activation.softmax import SoftmaxActivation
+from Activation.step import StepActivation
 
 
 class Layer:
 
-    def __init__(self, weights, biases):
-        self.weights = weights
-        self.biases = biases
+    activation_functions = {
+        "linear": LinearActivation,
+        "relu": ReluActivation,
+        "sigmoid": SigmoidActivation,
+        "softmax": SoftmaxActivation,
+        "sigmoid": SigmoidActivation,
+        "step": StepActivation
+    }
+
+    def __init__(self, n_inputs, n_neurons, activation_function):
+        self.weights = (np.sqrt(2.0 / n_inputs)) * np.random.randn(n_inputs, n_neurons)
+        self.biases = np.ones((1, n_neurons))
+        if activation_function not in self.activation_functions:
+            raise Exception("Activation function not found")
+        self.activation_function = self.activation_functions[activation_function]()
 
     def iterative_forward(self, neurons):
         """
@@ -20,7 +37,8 @@ class Layer:
         return self.output
 
     def forward(self, input):
-        self.output = np.dot(input, self.weights.T) + self.biases
+        self.weighted_sum = np.dot(input, self.weights) + self.biases
+        self.output = self.activation_function.forward(self.weighted_sum)
         return self.output
 
 

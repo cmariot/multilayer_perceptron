@@ -37,9 +37,16 @@ class Layer:
         return self.output
 
     def forward(self, input):
+        self.input = input
         self.weighted_sum = np.dot(input, self.weights) + self.biases
         self.output = self.activation_function.forward(self.weighted_sum)
         return self.output
+    
+    def backward(self, dvalues):
+        self.dweights = np.dot(self.input.T, dvalues)
+        self.dbiases = np.sum(dvalues, axis=0, keepdims=True)
+        self.dinputs = np.dot(dvalues, self.weights.T)
+        return self.dinputs
 
 
 if __name__ == "__main__":

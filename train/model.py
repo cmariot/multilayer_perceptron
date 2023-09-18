@@ -1,5 +1,6 @@
 from layer import Layer
 import numpy as np
+from Loss.categorical_cross_entropy import CategoricalCrossEntropy_Loss
 
 
 class Model:
@@ -21,6 +22,12 @@ if __name__ == "__main__":
         [-1.5, 2.7, 3.3, -0.8]
     ])
 
+    y = np.array([
+        [1, 1, 1],
+        [0, 2, 1],
+        [1, 2, 1]
+    ])
+
     layer1 = Layer(
         n_inputs=4,
         n_neurons=5,
@@ -37,4 +44,8 @@ if __name__ == "__main__":
 
     output = model.forward(x)
 
-    print(output) 
+    print(output)
+
+    loss_function = CategoricalCrossEntropy_Loss()
+    loss = loss_function.calculate(output, y)
+    print(loss)

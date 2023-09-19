@@ -31,7 +31,7 @@ class Layer:
                  n_neurons,
                  activation_function,
                  optimizer="sgd",
-                 learning_rate=0.01):
+                 learning_rate=0.0001):
         """
         Layer condstructor
         """
@@ -63,8 +63,8 @@ class Layer:
 
     def forward(self, input):
         self.input = input
-        self.weighted_sum = np.dot(input, self.weights) + self.biases
-        self.output = self.activation_function.forward(self.weighted_sum)
+        self.output = np.dot(input, self.weights) + self.biases
+        # self.output = self.activation_function.forward(self.weighted_sum)
         return self.output
 
     def backward(self, dvalues):
@@ -159,7 +159,7 @@ if __name__ == "__main__":
 
     layer = Layer(
         n_input=3,
-        n_neurons=
+        n_neurons=3
     )
 
     layer.weights = weights

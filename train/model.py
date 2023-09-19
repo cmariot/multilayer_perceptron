@@ -13,16 +13,11 @@ class Model:
             x = layer.forward(x)
         return x
 
-    def backward(self, last_layer_output, y):
+    def backward(self, dvalue, y):
         # dvalue est l'output de Loss backward sur l'output du dernier layer
-        # Loss backward(last_layer_output) -> loss.dinput
-
-        # Puis on parcourt les couches du modele en partant de la fin
-        # for layer in reverse(self.layers):
-            # dvalue = layer.activation.backward(loss.dinput)
-
-            # S'inspirer d' optimization.py pour l'implementation 
-        pass
+        for layer in reversed(self.layers):
+            dvalue = layer.backward(dvalue)
+        return dvalue
 
     def update(self):
         for layer in self.layers:
@@ -65,7 +60,12 @@ if __name__ == "__main__":
     loss = loss_function.calculate(output, y)
     print(loss)
 
+    dvalue = loss_function.backward(output, y)
+    model.backward(dvalue, y)
+
     model.update()
+
+    output = model.forward(x)
     loss = loss_function.calculate(output, y)
     print(loss)
 

@@ -21,6 +21,7 @@ class CategoricalCrossEntropy_Loss(Loss):
             y = np.eye(labels)[y]
         self.dinputs = -y / dvalues
         self.dinputs = self.dinputs / samples
+        return self.dinputs
 
 
 if __name__ == "__main__":

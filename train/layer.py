@@ -6,10 +6,12 @@ from Activation.relu import ReluActivation
 from Activation.sigmoid import SigmoidActivation
 from Activation.softmax import SoftmaxActivation
 from Activation.step import StepActivation
+from Optimizers.sgd import StandardGradientDescent
 
 
 class Layer:
 
+    # Available activation functions
     activation_functions = {
         "linear": LinearActivation,
         "relu": ReluActivation,
@@ -19,12 +21,35 @@ class Layer:
         "step": StepActivation
     }
 
-    def __init__(self, n_inputs, n_neurons, activation_function):
+    # Available optimizers
+    optimizers = {
+        "sgd": StandardGradientDescent 
+    }
+
+    def __init__(self,
+                 n_inputs,
+                 n_neurons,
+                 activation_function,
+                 optimizer="sgd",
+                 learning_rate=0.01):
+        """
+        Layer condstructor
+        """
+
+        # Weights and biases init
         self.weights = (np.sqrt(2.0 / n_inputs)) * np.random.randn(n_inputs, n_neurons)
         self.biases = np.ones((1, n_neurons))
+
+        # Activation function init
         if activation_function not in self.activation_functions:
             raise Exception("Activation function not found")
         self.activation_function = self.activation_functions[activation_function]()
+
+        # Optimizer init
+        if optimizer not in self.optimizers:
+            raise Exception("Activation function not found")
+        self.optimizer = self.optimizers[optimizer](learning_rate)
+
 
     def iterative_forward(self, neurons):
         """
@@ -41,12 +66,15 @@ class Layer:
         self.weighted_sum = np.dot(input, self.weights) + self.biases
         self.output = self.activation_function.forward(self.weighted_sum)
         return self.output
-    
+
     def backward(self, dvalues):
         self.dweights = np.dot(self.input.T, dvalues)
         self.dbiases = np.sum(dvalues, axis=0, keepdims=True)
         self.dinputs = np.dot(dvalues, self.weights.T)
         return self.dinputs
+
+    def update(self):
+        self.optimizer.update(self)
 
 
 if __name__ == "__main__":
@@ -57,38 +85,40 @@ if __name__ == "__main__":
 
     # Input of the layer, each neuron will have the same input,
     # In this case, we have 1 sample with 4 features
-    inputs = np.array([1, 2, 3, 2.5])
+    # inputs = np.array([1, 2, 3, 2.5])
 
     # If we create a layer of 3 neurons,
     # each neuron will have 4 weights (one for each feature) and 1 bias,
     # the weights and bias are different for each neuron
 
-    neuron1 = SingleNeuron(
-        inputs=inputs,
-        weights=np.array([0.2, 0.8, -0.5, 1.0]),
-        bias=2
-    )
+    # neuron1 = SingleNeuron(
+    #     inputs=inputs,
+    #     weights=np.array([0.2, 0.8, -0.5, 1.0]),
+    #     bias=2
+    # )
 
-    neuron2 = SingleNeuron(
-        inputs=inputs,
-        weights=np.array([0.5, -0.91, 0.26, -0.5]),
-        bias=3
-    )
+    # neuron2 = SingleNeuron(
+    #     inputs=inputs,
+    #     weights=np.array([0.5, -0.91, 0.26, -0.5]),
+    #     bias=3
+    # )
 
-    neuron3 = SingleNeuron(
-        inputs=inputs,
-        weights=np.array([-0.26, -0.27, 0.17, 0.87]),
-        bias=0.5
-    )
+    # neuron3 = SingleNeuron(
+    #     inputs=inputs,
+    #     weights=np.array([-0.26, -0.27, 0.17, 0.87]),
+    #     bias=0.5
+    # )
 
-    layer = Layer(
-        None,
-        None,
-    )
+    # layer = Layer(
+    #     n_inputs=3,
+    #     n_neurons=4,
+    #     activation_function="relu",
+    #     optimizer="sgd"
+    # )
 
     # Forward pass, we get the output of each neuron
-    layer.iterative_forward([neuron1, neuron2, neuron3])
-    print(layer.output)
+    # layer.iterative_forward([neuron1, neuron2, neuron3])
+    # print(layer.output)
 
     # weights = np.array([
     #     [0.2, 0.8, -0.5, 1.0],
@@ -127,6 +157,11 @@ if __name__ == "__main__":
 
     biases = np.array([2.0, 3.0, 0.5])
 
+    layer = Layer(
+        n_input=3,
+        n_neurons=
+    )
+
     layer.weights = weights
     layer.biases = biases
 
@@ -150,7 +185,9 @@ if __name__ == "__main__":
 
     second_layer = Layer(
         weights=weights,
-        biases=biases
+        biases=biases,
+        activation_function="softmax",
+        optimizer="sgd"
     )
 
     second_layer.forward(second_layer_input)

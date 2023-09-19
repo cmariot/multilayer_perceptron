@@ -13,6 +13,21 @@ class Model:
             x = layer.forward(x)
         return x
 
+    def backward(self, last_layer_output, y):
+        # dvalue est l'output de Loss backward sur l'output du dernier layer
+        # Loss backward(last_layer_output) -> loss.dinput
+
+        # Puis on parcourt les couches du modele en partant de la fin
+        # for layer in reverse(self.layers):
+            # dvalue = layer.activation.backward(loss.dinput)
+
+            # S'inspirer d' optimization.py pour l'implementation 
+        pass
+
+    def update(self):
+        for layer in self.layers:
+            layer.update()
+
 
 if __name__ == "__main__":
 
@@ -36,7 +51,7 @@ if __name__ == "__main__":
 
     layer2 = Layer(
         n_inputs=5,
-        n_neurons=2,
+        n_neurons=3,
         activation_function="softmax"
     )
 
@@ -49,3 +64,8 @@ if __name__ == "__main__":
     loss_function = CategoricalCrossEntropy_Loss()
     loss = loss_function.calculate(output, y)
     print(loss)
+
+    model.update()
+    loss = loss_function.calculate(output, y)
+    print(loss)
+

@@ -51,6 +51,12 @@ if __name__ == "__main__":
     # dsum_dxw0 = 1
     # dsum_dxw0 = drelu_dz * dsum_dxw0
 
+
+    # ###################################################################
+    # Comparaison between the Softmax Categorical Cross-Entropy Class and
+    # the Softmax + Categorical Cross-Entropy in two different Classes
+    # ###################################################################
+
     nnfs.init()
 
     softmax_output = np.array([

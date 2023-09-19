@@ -11,6 +11,10 @@ class SigmoidActivation:
         self.output = 1 / (1 + np.exp(-layer_output))
         return self.output
 
+    def backward(self, dvalues):
+        self.dinputs = dvalues * (1 - self.output) * self.output
+        return self.dinputs
+
 
 if __name__ == "__main__":
 

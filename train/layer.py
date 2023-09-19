@@ -31,7 +31,10 @@ class Layer:
                  n_neurons,
                  activation_function,
                  optimizer="sgd",
-                 learning_rate=0.0001):
+                 learning_rate=0.0001,
+                 decay=0.0,
+                 momentum=0.0
+                 ):
         """
         Layer condstructor
         """
@@ -39,6 +42,10 @@ class Layer:
         # Weights and biases init
         self.weights = (np.sqrt(2.0 / n_inputs)) * np.random.randn(n_inputs, n_neurons)
         self.biases = np.ones((1, n_neurons))
+
+        # Momentums : for momentum optimizer
+        self.weight_momentums = np.zeros_like(self.weights)
+        self.bias_momentums = np.zeros_like(self.biases)
 
         # Activation function init
         if activation_function not in self.activation_functions:
@@ -48,7 +55,7 @@ class Layer:
         # Optimizer init
         if optimizer not in self.optimizers:
             raise Exception("Activation function not found")
-        self.optimizer = self.optimizers[optimizer](learning_rate)
+        self.optimizer = self.optimizers[optimizer](learning_rate, decay, momentum)
 
 
     def iterative_forward(self, neurons):
@@ -74,7 +81,9 @@ class Layer:
         return self.dinputs
 
     def update(self):
+        self.optimizer.pre_update_params()
         self.optimizer.update(self)
+        self.optimizer.post_update_params()
 
 
 if __name__ == "__main__":

@@ -37,3 +37,4 @@ if __name__ == "__main__":
     loss = CategoricalCrossEntropy_Loss()
 
     print(loss.calculate(softmax_output, class_targets))
+

@@ -6,7 +6,6 @@ from Activation.relu import ReluActivation
 from Activation.sigmoid import SigmoidActivation
 from Activation.softmax import SoftmaxActivation
 from Activation.step import StepActivation
-from Optimizers.sgd import StandardGradientDescent
 
 
 class Layer:
@@ -17,23 +16,13 @@ class Layer:
         "relu": ReluActivation,
         "sigmoid": SigmoidActivation,
         "softmax": SoftmaxActivation,
-        "sigmoid": SigmoidActivation,
         "step": StepActivation
-    }
-
-    # Available optimizers
-    optimizers = {
-        "sgd": StandardGradientDescent 
     }
 
     def __init__(self,
                  n_inputs,
                  n_neurons,
-                 activation_function,
-                 optimizer="sgd",
-                 learning_rate=0.0001,
-                 decay=0.0,
-                 momentum=0.0
+                 activation_function
                  ):
         """
         Layer condstructor
@@ -51,11 +40,6 @@ class Layer:
         if activation_function not in self.activation_functions:
             raise Exception("Activation function not found")
         self.activation_function = self.activation_functions[activation_function]()
-
-        # Optimizer init
-        if optimizer not in self.optimizers:
-            raise Exception("Activation function not found")
-        self.optimizer = self.optimizers[optimizer](learning_rate, decay, momentum)
 
 
     def iterative_forward(self, neurons):
@@ -79,11 +63,6 @@ class Layer:
         self.dbiases = np.sum(dvalues, axis=0, keepdims=True)
         self.dinputs = np.dot(dvalues, self.weights.T)
         return self.dinputs
-
-    def update(self):
-        self.optimizer.pre_update_params()
-        self.optimizer.update(self)
-        self.optimizer.post_update_params()
 
 
 if __name__ == "__main__":
@@ -122,7 +101,6 @@ if __name__ == "__main__":
     #     n_inputs=3,
     #     n_neurons=4,
     #     activation_function="relu",
-    #     optimizer="sgd"
     # )
 
     # Forward pass, we get the output of each neuron
@@ -196,7 +174,6 @@ if __name__ == "__main__":
         weights=weights,
         biases=biases,
         activation_function="softmax",
-        optimizer="sgd"
     )
 
     second_layer.forward(second_layer_input)

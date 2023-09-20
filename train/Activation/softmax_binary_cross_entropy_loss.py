@@ -13,6 +13,7 @@ class Softmax_Binary_Cross_Entropy():
         self.activation_function.forward(inputs)
         self.output = self.activation_function.output
         return self.loss_function.calculate(self.output, y)
-    
+
     def backward(self, dvalues, y):
         pass
+

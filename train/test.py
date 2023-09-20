@@ -21,7 +21,6 @@ if __name__ == "__main__":
 
     # Dataset :
     X, y = spiral_data(samples=100, classes=2)
-    y = y.reshape(-1, 1)
 
     # Model :
     dense1 = Layer(
@@ -37,9 +36,9 @@ if __name__ == "__main__":
     )
 
     optimizer = StandardGradientDescent(
-        learning_rate=0.5,
+        learning_rate=0.1,
         decay=1e-3,
-        momentum=0.95,
+        momentum=0.99,
     )
 
     loss_function = BinaryCrossEntropy_Loss()
@@ -52,46 +51,46 @@ if __name__ == "__main__":
     learning_rates = []
 
     # Training :
-    epochs = 10 # 50_000
+    epochs = 10_000
     for i in ft_progress(range(epochs)):
 
-        print("Epoch: ", i, "\n\n")
-
         # Forwardpropagation :
-        # Input layer
         dense1.forward(X)
         dense1.activation_function.forward(dense1.output)
-        # Hidden layer
-        # TODO [...]
-        # Output layer
         dense2.forward(dense1.activation_function.output)
         dense2.activation_function.forward(dense2.output)
 
+        # Predictions :
+        predictions = np.argmax(dense2.activation_function.output, axis=1)
+
         # Loss function :
-        loss = loss_function.calculate(dense2.activation_function.output, y)
+        # loss = loss_function.calculate(predictions, y)
+        loss = loss_function.calculate(predictions, y)
         losses.append(loss)
 
         # Compute and save accuracy :
-        y_hat = np.argmax(dense2.activation_function.output, axis=1)
-        accuracy = accuracy_score_(y, y_hat)
+        accuracy = accuracy_score_(y, predictions)
         accuracies.append(accuracy)
         learning_rates.append(optimizer.current_learning_rate)
 
-        # # Backpropagation :
-        # # Input layer
-        # loss_function.backward(dense2.activation_function.output, y)
-        # dense2.backward(loss_function.dinputs)
-        # # Hidden layer
-        # # TODO [...]
-        # # Output layer
-        # dense1.activation_function.backward(dense2.dinputs)
-        # dense1.backward(dense1.activation_function.dinputs)
+        # Loss backward :
+        # loss_function.backward(predictions, y)
+        predictions = np.expand_dims(predictions, axis=1)
+        loss_function.backward(predictions, y)
 
-        # # Update weights and biases :
-        # optimizer.pre_update_params()
-        # optimizer.update(dense1)
-        # optimizer.update(dense2)
-        # optimizer.post_update_params()
+        # Backpropagation :
+        # Output layer
+        dense2.activation_function.backward(loss_function.dinputs)
+        dense2.backward(dense2.activation_function.dinputs)
+        # Input layer
+        dense1.activation_function.backward(dense2.dinputs)
+        dense1.backward(dense1.activation_function.dinputs)
+
+        # Update weights and biases :
+        optimizer.pre_update_params()
+        optimizer.update(dense1)
+        optimizer.update(dense2)
+        optimizer.post_update_params()
 
     # Print the last value of loss and accuracy
     print("Loss: ", loss)

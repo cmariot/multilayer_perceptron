@@ -580,7 +580,7 @@ activation1 = Activation_ReLU()
 
 # Create second Dense layer with 64 input features (as we take output
 # of previous layer here) and 1 output value
-dense2 = Layer_Dense(64, 1)
+dense2 = Layer_Dense(64, 2)
 
 # Create Sigmoid activation:
 activation2 = Activation_Sigmoid()
@@ -610,8 +610,7 @@ for epoch in range(10001):
     # takes the output of second dense layer here
     activation2.forward(dense2.output)
 
-    print(activation2.output)
-    exit()
+    # exit()
 
     # Calculate the data loss
     data_loss = loss_function.calculate(activation2.output, y)

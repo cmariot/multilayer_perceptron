@@ -12,14 +12,12 @@ from Loss.categorical_cross_entropy import CategoricalCrossEntropy_Loss
 
 
 # TODO :
-# - [ ] Use the cells training dataset
+# - [ ] Use the real training dataset
 # - [ ] Batch the data and use epochs
 # - [ ] Use the model for the training : model.fit(X, y, epochs=100_000)
 # - [ ] Use main arguments as model parameters
 # - [ ] Use the test dataset to check and avoid overfitting
 # - [ ] Fine tuning the hyperparameter default values
-
-
 
 if __name__ == "__main__":
 

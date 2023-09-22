@@ -20,13 +20,14 @@ def accuracy_score_(y, y_hat):
     try:
         if not isinstance(y, np.ndarray) \
                 or not isinstance(y_hat, np.ndarray):
-            return None
+            raise TypeError("y and y_hat must be numpy.ndarrays")
         elif y.shape != y_hat.shape:
-            return None
+            raise ValueError("y and y_hat must have the same shape")
         elif y.size == 0:
-            return None
+            raise ValueError("y and y_hat must not be empty")
         accuracy = np.mean(y == y_hat)
         return accuracy
 
-    except Exception:
-        return None
+    except Exception as e:
+        print(e)
+        exit()

@@ -36,7 +36,7 @@ def parse_arguments():
             type=int,
             nargs="+",
             help="Number of neurons in each layer",
-            default=[30, 24, 24, 24, 2]
+            default=[30, 24, 24, 2]
         )
 
         parser.add_argument(
@@ -44,7 +44,7 @@ def parse_arguments():
             type=str,
             nargs="+",
             help="Activation function in each layer",
-            default=["sigmoid", "sigmoid", "sigmoid", "sigmoid", "softmax"]
+            default=["sigmoid", "sigmoid", "sigmoid", "softmax"]
         )
 
         parser.add_argument(
@@ -58,28 +58,28 @@ def parse_arguments():
             "--epochs",
             type=int,
             help="Number of epochs to train the model",
-            default=2000
+            default=300
         )
 
         parser.add_argument(
             "--batch_size",
             type=int,
             help="Size of the batch used to train the model",
-            default=256
+            default=32
         )
 
         parser.add_argument(
             "--learning_rate",
             type=float,
             help="Initial learning rate of the model",
-            default=0.001
+            default=0.1
         )
 
         parser.add_argument(
             "--decay",
             type=float,
             help="Decay of the learning rate, used to reduce it over time",
-            default=0.0
+            default=0.001
         )
 
         parser.add_argument(
@@ -87,7 +87,7 @@ def parse_arguments():
             type=float,
             help="Momentum of the model, used to accelerate the learning" +
             " and avoid local minima",
-            default=0.0
+            default=0.001
         )
 
         args = parser.parse_args()

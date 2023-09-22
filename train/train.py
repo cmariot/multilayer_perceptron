@@ -45,11 +45,34 @@ def header():
 
 
 # TODO :
-# - [ ] Batch the data and use epochs
+# - [ ] Create the Model / Multilayer_Perceptron class
+# - [ ] Use main arguments as model parameters
 # - [ ] Use the validation dataset to check and avoid overfitting
 # - [ ] Use the model for the training : model.fit(X, y, epochs=100_000)
-# - [ ] Use main arguments as model parameters
 # - [ ] Fine tuning the hyperparameter default values
+
+
+def get_batch(x, y, i, batch_size):
+    start = i * batch_size
+    end = (i + 1) * batch_size
+    if end > x.shape[0]:
+        end = x.shape[0]
+    x_batch = x[start:end]
+    y_batch = y[start:end]
+    return x_batch, y_batch
+
+
+def metrics_dictionary():
+    """
+    Return a dictionary with the metrics as keys and empty lists as values.
+    Used to store the metrics that will be plotted.
+    """
+    return {
+        "accuracy": [],
+        "precision": [],
+        "recall": [],
+        "f1_score": []
+    }
 
 
 if __name__ == "__main__":
@@ -92,8 +115,16 @@ if __name__ == "__main__":
         y_validation
     ) = get_validation_data(validation_path, x_min, x_max)
 
-    n_features = x_train_norm.shape[1]
     n_train_samples = x_train_norm.shape[0]
+    n_features = x_train_norm.shape[1]
+
+    # ########################################################### #
+    # Create the neural network model :                           #
+    # - Input layer                                               #
+    # - Hidden layer 1                                            #
+    # - Hidden layer 2                                            #
+    # - Output layer                                              #
+    # ########################################################### #
 
     # Model :
     input_layer = Layer(
@@ -132,71 +163,100 @@ if __name__ == "__main__":
 
     y_train = np.array([[1, 0] if i == 0 else [0, 1] for i in y_train])
 
+    # ########################################################### #
+    # Train the model                                             #
+    # ########################################################### #
+
     # Metrics :
     losses = []
-    accuracies = []
+    # accuracies = []
     learning_rates = []
+    training_metrics = metrics_dictionary()
+    validation_metrics = metrics_dictionary()
 
     # Training :
-    epochs = 1_000
-    for i in ft_progress(range(epochs)):
+    epochs = 100
+    batch_size = 32
+    n_batch = n_train_samples // batch_size
+    # if n_train_samples % batch_size != 0:
+    #     self.n_batch += 1
 
-        # Forwardpropagation :
-        input_layer.forward(x_train_norm)
-        input_layer.activation_function.forward(input_layer.output)
-        hidden_layer1.forward(input_layer.activation_function.output)
-        hidden_layer1.activation_function.forward(hidden_layer1.output)
-        hidden_layer2.forward(hidden_layer1.activation_function.output)
-        hidden_layer2.activation_function.forward(hidden_layer2.output)
-        ouput_layer.forward(hidden_layer2.activation_function.output)
-        ouput_layer.activation_function.forward(ouput_layer.output)
+    for epoch in ft_progress(range(epochs)):
+
+        for i in range(n_batch):
+
+            # Random batch
+            x_batch, y_batch = get_batch(
+                x_train_norm, y_train, i, batch_size
+            )
+
+            # Forwardpropagation :
+            input_layer.forward(x_batch)
+            input_layer.activation_function.forward(input_layer.output)
+            hidden_layer1.forward(input_layer.activation_function.output)
+            hidden_layer1.activation_function.forward(hidden_layer1.output)
+            hidden_layer2.forward(hidden_layer1.activation_function.output)
+            hidden_layer2.activation_function.forward(hidden_layer2.output)
+            ouput_layer.forward(hidden_layer2.activation_function.output)
+            ouput_layer.activation_function.forward(ouput_layer.output)
+
+            # Loss backward :
+            loss_function.backward(ouput_layer.activation_function.output, y_batch)
+
+            # Backpropagation :
+            ouput_layer.activation_function.backward(loss_function.dinputs)
+            ouput_layer.backward(ouput_layer.activation_function.dinputs)
+            hidden_layer2.activation_function.backward(ouput_layer.dinputs)
+            hidden_layer2.backward(hidden_layer2.activation_function.dinputs)
+            hidden_layer1.activation_function.backward(ouput_layer.dinputs)
+            hidden_layer1.backward(hidden_layer1.activation_function.dinputs)
+            input_layer.activation_function.backward(hidden_layer1.dinputs)
+            input_layer.backward(input_layer.activation_function.dinputs)
+
+            # Save the learning rate
+            learning_rates.append(optimizer.current_learning_rate)
+
+            # Update weights and biases :
+            optimizer.pre_update_params()
+            optimizer.update(input_layer)
+            optimizer.update(ouput_layer)
+            optimizer.post_update_params()
 
         # Loss function :
-        loss = loss_function.calculate(ouput_layer.activation_function.output, y_train)
+        loss = loss_function.calculate(ouput_layer.activation_function.output, y_batch)
         losses.append(loss)
 
+        # Compute the loss and the metrics on :
+        # - The training dataset
+        # - The validation dataset
+        training_y_hat = np.zeros(y_batch.shape)
+        training_y_hat[np.arange(len(y_hat)), ouput_layer.activation_function.output.argmax(axis=1)] = 1
+        training_metrics["accuracy"] = accuracy_score_(y_batch, training_y_hat)
+
+        validation_y_hat = 42
+        validation_metrics["accuracy"] = 42
+
+
         # Compute and save accuracy :
-        y_hat = np.zeros(y_train.shape)
-        y_hat[np.arange(len(y_hat)), ouput_layer.activation_function.output.argmax(axis=1)] = 1
-        accuracy = accuracy_score_(y_train, y_hat)
-        accuracies.append(accuracy)
-        learning_rates.append(optimizer.current_learning_rate)
+        # y_hat = np.zeros(y_batch.shape)
+        # y_hat[np.arange(len(y_hat)), ouput_layer.activation_function.output.argmax(axis=1)] = 1
+        # accuracy = accuracy_score_(y_batch, y_hat)
+        # accuracies.append(accuracy)
+        # learning_rates.append(optimizer.current_learning_rate)
 
-        # Loss backward :
-        loss_function.backward(ouput_layer.activation_function.output, y_train)
+    # # Print the last value of loss and accuracy
+    # print("Loss: ", loss)
+    # print("Accuracy: ", accuracy)
 
-        # Backpropagation :
-        ouput_layer.activation_function.backward(loss_function.dinputs)
-        ouput_layer.backward(ouput_layer.activation_function.dinputs)
-
-        hidden_layer2.activation_function.backward(ouput_layer.dinputs)
-        hidden_layer2.backward(hidden_layer2.activation_function.dinputs)
-
-        hidden_layer1.activation_function.backward(ouput_layer.dinputs)
-        hidden_layer1.backward(hidden_layer1.activation_function.dinputs)
-
-        input_layer.activation_function.backward(hidden_layer1.dinputs)
-        input_layer.backward(input_layer.activation_function.dinputs)
-
-        # Update weights and biases :
-        optimizer.pre_update_params()
-        optimizer.update(input_layer)
-        optimizer.update(ouput_layer)
-        optimizer.post_update_params()
-
-    # Print the last value of loss and accuracy
-    print("Loss: ", loss)
-    print("Accuracy: ", accuracy)
-
-    # Plot the loss and accuracy on the same graph
+    # # Plot the loss and accuracy on the same graph
     plt.title("Loss and Accuracy")
     plt.plot(range(epochs), losses, label="loss")
-    plt.plot(range(epochs), accuracies, label="accuracy")
+    # plt.plot(range(epochs * n_batch), accuracies, label="accuracy")
     plt.legend()
     plt.show()
 
     # Plot the learning rate evolution
-    # plt.title("Learning Rate Decay")
-    # plt.plot(range(epochs), learning_rates)
-    # plt.show()
+    plt.title("Learning Rate Decay")
+    plt.plot(range(epochs * n_batch), learning_rates)
+    plt.show()
 

@@ -1,21 +1,17 @@
 import numpy as np
 from nnfs.datasets import spiral_data
-from Activation.linear import LinearActivation
 from Activation.relu import ReluActivation
 from Activation.sigmoid import SigmoidActivation
 from Activation.softmax import SoftmaxActivation
-from Activation.step import StepActivation
 
 
 class Layer:
 
     # Available activation functions
     activation_functions = {
-        "linear": LinearActivation,
         "relu": ReluActivation,
         "sigmoid": SigmoidActivation,
-        "softmax": SoftmaxActivation,
-        "step": StepActivation
+        "softmax": SoftmaxActivation
     }
 
     def __init__(self,

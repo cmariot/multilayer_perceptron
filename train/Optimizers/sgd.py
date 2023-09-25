@@ -1,6 +1,3 @@
-import numpy as np
-
-
 class StandardGradientDescent:
 
     def __init__(self, learning_rate, decay, momentum):
@@ -9,7 +6,6 @@ class StandardGradientDescent:
         self.decay = decay
         self.momentum = momentum
         self.iterations = 0
-
 
     def pre_update_params(self):
         if self.decay:

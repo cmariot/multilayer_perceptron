@@ -17,17 +17,3 @@ class ReluActivation:
         self.dinputs = dvalues.copy()
         self.dinputs[self.input <= 0] = 0
         return self.dinputs    
-
-
-if __name__ == "__main__":
-
-    import matplotlib.pyplot as plt
-
-    relu = ReluActivation()
-
-    x = np.linspace(-10, 10)
-    y = relu.forward(x)
-
-    plt.title("Relu Activation Function")
-    plt.plot(x, y)
-    plt.show()

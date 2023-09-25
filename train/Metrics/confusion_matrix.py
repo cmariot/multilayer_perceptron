@@ -40,8 +40,6 @@ def confusion_matrix_(y_true, y_hat, labels=None, df_option=False):
             print("Not a numpy array")
             return None
         if y_true.shape != y_hat.shape:
-            print(y_true.shape)
-            print(y_hat.shape)
             print("Shape error")
             return None
         if y_true.size == 0 or y_hat.size == 0:

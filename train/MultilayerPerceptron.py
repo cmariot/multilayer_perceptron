@@ -1,6 +1,7 @@
 from layer import Layer
 from Loss.binary_cross_entropy import BinaryCrossEntropy_Loss
 from Optimizers.sgd import StandardGradientDescent
+import pickle
 
 
 class MultilayerPerceptron:
@@ -20,6 +21,8 @@ class MultilayerPerceptron:
                  loss_name,
                  epochs,
                  batch_size,
+                 x_min,
+                 x_max,
                  n_train_samples,
                  learning_rate,
                  decay,
@@ -55,13 +58,19 @@ class MultilayerPerceptron:
                 momentum
             )
 
+            # Learning rates evolution
+            self.learning_rates = []
+
             # Training parameters initialization
             self.epochs = epochs
             self.batch_size = batch_size
             self.n_batch = n_train_samples // batch_size
             if n_train_samples % batch_size != 0:
                 self.n_batch += 1
-                # Pas ouf a revoir
+
+            # Normalization parameters
+            self.x_min = x_min
+            self.x_max = x_max
 
         except Exception as e:
             print(e)
@@ -93,6 +102,23 @@ class MultilayerPerceptron:
 
     def optimize(self):
         self.optimizer.pre_update_params()
+        self.learning_rates.append(self.optimizer.current_learning_rate)
         for layer in self.layers:
             self.optimizer.update(layer)
         self.optimizer.post_update_params()
+
+    def save_model(self, path):
+        try:
+            with open(path, "wb") as file:
+                pickle.dump(self, file)
+        except Exception as e:
+            print(e)
+            exit()
+
+    def load_model(self, path):
+        try:
+            with open(path, "rb") as file:
+                self = pickle.load(file)
+        except Exception as e:
+            print(e)
+            exit()

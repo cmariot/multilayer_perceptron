@@ -1,5 +1,4 @@
 import numpy as np
-from single_neuron import SingleNeuron
 from nnfs.datasets import spiral_data
 from Activation.linear import LinearActivation
 from Activation.relu import ReluActivation

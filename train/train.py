@@ -140,9 +140,6 @@ if __name__ == "__main__":
     n_train_samples = x_train_norm.shape[0]
     n_features = x_train_norm.shape[1]
 
-    y_train = np.array([[1, 0] if i == 0 else [0, 1] for i in y_train])
-    y_validation = np.array([[1, 0] if i == 0 else [0, 1] for i in y_validation])
-
     # ########################################################### #
     # Create the neural network model :                           #
     # - Input layer                                               #
@@ -159,6 +156,8 @@ if __name__ == "__main__":
         loss_name=loss_name,
         epochs=epochs,
         batch_size=batch_size,
+        x_min=x_min,
+        x_max=x_max,
         n_train_samples=n_train_samples,
         learning_rate=learning_rate,
         decay=decay,
@@ -170,7 +169,6 @@ if __name__ == "__main__":
     # ############### #
 
     # Metrics :
-    learning_rates = []
     training_metrics = metrics_dictionary()
     validation_metrics = metrics_dictionary()
 
@@ -182,7 +180,6 @@ if __name__ == "__main__":
             )
             y_hat = model.forward(x_batch)
             model.backward(y_batch)
-            learning_rates.append(model.optimizer.current_learning_rate)
             model.optimize()
 
         # ############### #
@@ -205,6 +202,7 @@ if __name__ == "__main__":
             validation_metrics
         )
 
+    model.save_model("model.pkl")
 
     # Print the last value of loss and accuracy
     print("Loss: ", training_metrics["loss"][-1])
@@ -235,6 +233,5 @@ if __name__ == "__main__":
 
     # Plot the learning rate evolution
     plt.title("Learning Rate Decay")
-    plt.plot(learning_rates)
+    plt.plot(model.learning_rates)
     plt.show()
-

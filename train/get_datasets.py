@@ -58,7 +58,12 @@ def get_training_data(dataset_path: str) -> tuple:
         y_train = train_data["Diagnosis"]
         y_train = np.where(y_train == "M", 0, 1)
         y_train = y_train.reshape(-1, 1)
-
+        y_train = np.array(
+            [
+                [1, 0] if y == 0 else [0, 1]
+                for y in y_train
+            ]
+        )
         return (
             x_train_norm,
             y_train,
@@ -105,7 +110,12 @@ def get_validation_data(
         y_validation = validation_data["Diagnosis"]
         y_validation = np.where(y_validation == "M", 0, 1)
         y_validation = y_validation.reshape(-1, 1)
-
+        y_validation = np.array(
+            [
+                [1, 0] if y == 0 else [0, 1]
+                for y in y_validation
+            ]
+        )
         return x_validation_norm, y_validation
 
     except Exception:

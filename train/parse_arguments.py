@@ -58,7 +58,7 @@ def parse_arguments():
             "--epochs",
             type=int,
             help="Number of epochs to train the model",
-            default=300
+            default=600
         )
 
         parser.add_argument(
@@ -105,6 +105,6 @@ def parse_arguments():
             args.momentum
         )
 
-    except Exception as e:
-        print(e)
+    except Exception as error:
+        print(error)
         exit()

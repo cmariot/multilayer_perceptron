@@ -20,8 +20,6 @@ class StandardGradientDescent:
 
         if self.momentum:
 
-
-
             weight_updates = self.momentum * layer.weight_momentums - \
                     self.current_learning_rate * layer.dweights
             layer.weight_momentums = weight_updates

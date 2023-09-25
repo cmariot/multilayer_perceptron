@@ -58,7 +58,7 @@ def confusion_matrix_(y_true, y_hat, labels=None, df_option=False):
                                     & (y_hat == labels[j]))[0].shape[0]
         if df_option:
             cm = pandas.DataFrame(cm, index=labels, columns=labels)
-        print("\nConfusion matrix on the validation set:\n\n", cm, "\n")
+        print(cm, "\n")
         return cm
 
     except Exception:

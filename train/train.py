@@ -41,19 +41,26 @@ def header():
 """)
 
 
-# TODO :
-# - [ ] Use the model for the training : model.fit(X, y, epochs=100_000)
-# - [ ] Fine tuning the hyperparameter default values
-
-
-def get_batch(x, y, i, batch_size):
-    start = i * batch_size
-    end = (i + 1) * batch_size
-    if end > x.shape[0]:
-        end = x.shape[0]
-    x_batch = x[start:end]
-    y_batch = y[start:end]
-    return x_batch, y_batch
+def get_batch(x_train, y_train, i, batch_size):
+    """
+    """
+    try:
+        n_samples = x_train.shape[0]
+        train_set = np.concatenate((x_train, y_train), axis=1)
+        index_start = np.random.randint(0, n_samples)
+        index_end = index_start + batch_size
+        if index_end > n_samples:
+            batch_begin = train_set[index_start:, :]
+            batch_end = train_set[:index_end - n_samples, :]
+            batch = np.concatenate((batch_begin, batch_end), axis=0)
+        else:
+            batch = train_set[index_start:index_end, :]
+        x = batch[:, :-2]
+        y = batch[:, -2:]
+        return x, y
+    except Exception as error:
+        print(error)
+        exit()
 
 
 def metrics_dictionary():
@@ -61,25 +68,35 @@ def metrics_dictionary():
     Return a dictionary with the metrics as keys and empty lists as values.
     Used to store the metrics that will be plotted.
     """
-    return {
-        "loss": [],
-        "accuracy": [],
-        "precision": [],
-        "recall": [],
-        "f1_score": []
-    }
+    try:
+        return {
+            "accuracy": [],
+            "precision": [],
+            "recall": [],
+            "f1_score": [],
+            "loss": []
+        }
+    except Exception as error:
+        print(error)
+        exit()
 
 
 def compute_metrics(model, x, y, dictionary):
-    output = model.forward(x)
-    y_hat = np.zeros(y.shape)
-    y_hat[np.arange(len(y_hat)), output.argmax(axis=1)] = 1
-    dictionary["loss"].append(model.loss.calculate(output, y))
-    dictionary["accuracy"].append(accuracy_score_(y, y_hat))
-    dictionary["precision"].append(precision_score_(y, y_hat))
-    dictionary["recall"].append(recall_score_(y, y_hat))
-    dictionary["f1_score"].append(f1_score_(y, y_hat))
-    return dictionary, y_hat
+    try:
+        output = model.forward(x)
+        y_hat = np.zeros(y.shape)
+        y_hat[np.arange(len(y_hat)), output.argmax(axis=1)] = 1
+        dictionary["loss"].append(model.loss.calculate(output, y))
+        dictionary["accuracy"].append(accuracy_score_(y, y_hat))
+        dictionary["precision"].append(precision_score_(y, y_hat))
+        dictionary["recall"].append(recall_score_(y, y_hat))
+        dictionary["f1_score"].append(f1_score_(y, y_hat))
+        return dictionary, y_hat
+    except Exception as error:
+        print(error)
+        exit()
+
+
 if __name__ == "__main__":
 
     header()
@@ -124,7 +141,6 @@ if __name__ == "__main__":
     n_features = x_train_norm.shape[1]
 
     y_train = np.array([[1, 0] if i == 0 else [0, 1] for i in y_train])
-    print(y_train)
     y_validation = np.array([[1, 0] if i == 0 else [0, 1] for i in y_validation])
 
     # ########################################################### #
@@ -195,7 +211,9 @@ if __name__ == "__main__":
     print("Accuracy: ", training_metrics["accuracy"][-1])
 
     # Confusion matrix :
+    print("\nConfusion matrix on the training set:\n\n")
     confusion_matrix_(y_train, train_y_hat, df_option=True)
+    print("\nConfusion matrix on the validation set:\n\n")
     confusion_matrix_(y_validation, validation_y_hat, df_option=True)
 
     # Plot the loss and accuracy on the same graph

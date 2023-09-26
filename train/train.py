@@ -1,15 +1,14 @@
-# ************************************************************************** #
-#                                                                            #
-#                                                       :::      ::::::::    #
-#    train.py                                         :+:      :+:    :+:    #
-#                                                   +:+ +:+         +:+      #
-#    By: cmariot <cmariot@student.42.fr>          +#+  +:+       +#+         #
-#                                               +#+#+#+#+#+   +#+            #
-#    Created: 2023/08/24 14:39:03 by cmariot         #+#    #+#              #
-#    Updated: 2023/08/24 14:39:04 by cmariot        ###   ########.fr        #
-#                                                                            #
-# ************************************************************************** #
-
+# *************************************************************************** #
+#                                                                             #
+#                                                        :::      ::::::::    #
+#    train.py                                          :+:      :+:    :+:    #
+#                                                    +:+ +:+         +:+      #
+#    By: cmariot <contact@charles-mariot.fr>       +#+  +:+       +#+         #
+#                                                +#+#+#+#+#+   +#+            #
+#    Created: 2023/09/26 13:59:17 by cmariot          #+#    #+#              #
+#    Updated: 2023/09/26 17:59:26 by cmariot         ###   ########.fr        #
+#                                                                             #
+# *************************************************************************** #
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -41,7 +40,7 @@ def header():
 """)
 
 
-def get_batch(x_train, y_train, i, batch_size):
+def get_batch(x_train, y_train, batch_size):
     """
     """
     try:
@@ -84,14 +83,14 @@ def metrics_dictionary():
 def compute_metrics(model, x, y, dictionary):
     try:
         output = model.forward(x)
-        y_hat = np.zeros(y.shape)
-        y_hat[np.arange(len(y_hat)), output.argmax(axis=1)] = 1
+        y_pred = np.argmax(output, axis=1)
+        y_true = np.argmax(y, axis=1)
         dictionary["loss"].append(model.loss.calculate(output, y))
-        dictionary["accuracy"].append(accuracy_score_(y, y_hat))
-        dictionary["precision"].append(precision_score_(y, y_hat))
-        dictionary["recall"].append(recall_score_(y, y_hat))
-        dictionary["f1_score"].append(f1_score_(y, y_hat))
-        return dictionary, y_hat
+        dictionary["accuracy"].append(accuracy_score_(y_true, y_pred))
+        dictionary["precision"].append(precision_score_(y_true, y_pred))
+        dictionary["recall"].append(recall_score_(y_true, y_pred))
+        dictionary["f1_score"].append(f1_score_(y_true, y_pred))
+        return dictionary, y_pred
     except Exception as error:
         print(error)
         exit()
@@ -140,6 +139,10 @@ if __name__ == "__main__":
     n_train_samples = x_train_norm.shape[0]
     n_features = x_train_norm.shape[1]
 
+    print("Number of training samples: ", n_train_samples)
+    print("Number of validation samples: ", x_validation_norm.shape[0])
+    print("Number of features: ", n_features, "\n")
+
     # ########################################################### #
     # Create the neural network model :                           #
     # - Input layer                                               #
@@ -176,15 +179,11 @@ if __name__ == "__main__":
     for epoch in ft_progress(range(model.epochs)):
         for i in range(model.n_batch):
             x_batch, y_batch = get_batch(
-                x_train_norm, y_train, i, model.batch_size
+                x_train_norm, y_train, batch_size
             )
             y_hat = model.forward(x_batch)
             model.backward(y_batch)
             model.optimize()
-
-        # ############### #
-        # Train the model #
-        # ############### #
 
         # Compute the metrics on the training dataset :
         training_metrics, train_y_hat = compute_metrics(
@@ -205,8 +204,12 @@ if __name__ == "__main__":
     model.save_model("model.pkl")
 
     # Print the last value of loss and accuracy
+    print("\nTraining metrics :")
     print("Loss: ", training_metrics["loss"][-1])
     print("Accuracy: ", training_metrics["accuracy"][-1])
+    print("Recall: ", training_metrics["recall"][-1])
+    print("Precision: ", training_metrics["precision"][-1])
+    print("F1 score: ", training_metrics["f1_score"][-1])
 
     # Confusion matrix :
     print("\nConfusion matrix on the training set:\n\n")
@@ -228,6 +231,7 @@ if __name__ == "__main__":
         ax.plot(training_metrics[metric], label="Training")
         ax.plot(validation_metrics[metric], label="Validation")
         ax.legend()
+        ax.set_ylim([0, 1.1])
     plt.legend()
     plt.show()
 

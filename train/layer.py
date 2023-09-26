@@ -24,7 +24,8 @@ class Layer:
         """
 
         # Weights and biases init
-        self.weights = (np.sqrt(2.0 / n_inputs)) * np.random.randn(n_inputs, n_neurons)
+        self.weights = \
+            (np.sqrt(2.0 / n_inputs)) * np.random.randn(n_inputs, n_neurons)
         self.biases = np.ones((1, n_neurons))
 
         # Momentums : for momentum optimizer
@@ -34,8 +35,8 @@ class Layer:
         # Activation function init
         if activation_function not in self.activation_functions:
             raise Exception("Activation function not found")
-        self.activation_function = self.activation_functions[activation_function]()
-
+        self.activation_function = \
+            self.activation_functions[activation_function]()
 
     def iterative_forward(self, neurons):
         """

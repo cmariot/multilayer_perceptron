@@ -1,3 +1,15 @@
+# *************************************************************************** #
+#                                                                             #
+#                                                        :::      ::::::::    #
+#    MultilayerPerceptron.py                           :+:      :+:    :+:    #
+#                                                    +:+ +:+         +:+      #
+#    By: cmariot <contact@charles-mariot.fr>       +#+  +:+       +#+         #
+#                                                +#+#+#+#+#+   +#+            #
+#    Created: 2023/09/26 14:41:05 by cmariot          #+#    #+#              #
+#    Updated: 2023/09/26 15:53:23 by cmariot         ###   ########.fr        #
+#                                                                             #
+# *************************************************************************** #
+
 from layer import Layer
 from Loss.binary_cross_entropy import BinaryCrossEntropy_Loss
 from Optimizers.sgd import StandardGradientDescent
@@ -76,7 +88,6 @@ class MultilayerPerceptron:
             print(e)
             exit()
 
-
     def forward(self, inputs):
         try:
             for layer in self.layers:
@@ -90,8 +101,10 @@ class MultilayerPerceptron:
 
     def backward(self, y):
         try:
-            dinputs = self.loss.backward(self.layers[-1].activation_function.output, y)
-            for i, layer in enumerate(reversed(self.layers)):
+            dinputs = self.loss.backward(
+                    self.layers[-1].activation_function.output, y
+            )
+            for layer in reversed(self.layers):
                 layer.activation_function.backward(dinputs)
                 layer.backward(layer.activation_function.dinputs)
                 dinputs = layer.dinputs
@@ -119,6 +132,7 @@ class MultilayerPerceptron:
         try:
             with open(path, "rb") as file:
                 self = pickle.load(file)
+            return self
         except Exception as e:
             print(e)
             exit()

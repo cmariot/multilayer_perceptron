@@ -19,3 +19,4 @@ class BinaryCrossEntropy_Loss:
         self.dinputs = -(y / dvalues_clipped - (1 - y) / (1 - dvalues_clipped)) / labels
         self.dinputs = self.dinputs / samples
         return self.dinputs
+

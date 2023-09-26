@@ -16,4 +16,5 @@ class ReluActivation:
     def backward(self, dvalues):
         self.dinputs = dvalues.copy()
         self.dinputs[self.input <= 0] = 0
-        return self.dinputs    
+        return self.dinputs
+

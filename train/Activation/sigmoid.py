@@ -14,3 +14,4 @@ class SigmoidActivation:
     def backward(self, dvalues):
         self.dinputs = dvalues * (1 - self.output) * self.output
         return self.dinputs
+

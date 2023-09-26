@@ -28,3 +28,4 @@ class SoftmaxActivation:
             )
             self.dinputs[index] = np.dot(jacobian_matrix, single_dvalues)
         return self.dinputs
+

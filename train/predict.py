@@ -6,7 +6,6 @@ import numpy as np
 from Metrics.accuracy import accuracy_score_
 
 
-
 def parse_arguments():
 
     try:
@@ -58,7 +57,6 @@ def load_dataset(path: str) -> object:
     except Exception as error:
         print(error)
         exit()
-
 
 
 if __name__ == "__main__":

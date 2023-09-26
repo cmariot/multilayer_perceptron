@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>           +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/24 14:40:02 by cmariot          #+#    #+#              #
-#    Updated: 2023/08/24 14:40:03 by cmariot         ###   ########.fr        #
+#    Updated: 2023/09/26 17:55:33 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
@@ -39,8 +39,11 @@ def confusion_matrix_(y_true, y_hat, labels=None, df_option=False):
                 or not isinstance(y_hat, np.ndarray):
             print("Not a numpy array")
             return None
+        y_true = y_true.argmax(axis=1)
         if y_true.shape != y_hat.shape:
             print("Shape error")
+            print("y_true shape:", y_true.shape)
+            print("y_hat shape:", y_hat.shape)
             return None
         if y_true.size == 0 or y_hat.size == 0:
             print("Empty array")

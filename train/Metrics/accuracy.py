@@ -28,6 +28,7 @@ def accuracy_score_(y, y_hat):
         accuracy = np.mean(y == y_hat)
         return accuracy
 
-    except Exception as e:
-        print(e)
+    except Exception as error:
+        print(error)
         exit()
+

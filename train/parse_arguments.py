@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>           +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/24 14:39:26 by cmariot          #+#    #+#              #
-#    Updated: 2023/08/28 16:35:57 by cmariot         ###   ########.fr        #
+#    Updated: 2023/09/26 18:05:12 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
@@ -58,7 +58,7 @@ def parse_arguments():
             "--epochs",
             type=int,
             help="Number of epochs to train the model",
-            default=600
+            default=500
         )
 
         parser.add_argument(
@@ -72,14 +72,14 @@ def parse_arguments():
             "--learning_rate",
             type=float,
             help="Initial learning rate of the model",
-            default=0.1
+            default=0.05
         )
 
         parser.add_argument(
             "--decay",
             type=float,
             help="Decay of the learning rate, used to reduce it over time",
-            default=0.001
+            default=0.01
         )
 
         parser.add_argument(
@@ -87,7 +87,7 @@ def parse_arguments():
             type=float,
             help="Momentum of the model, used to accelerate the learning" +
             " and avoid local minima",
-            default=0.001
+            default=0.9
         )
 
         args = parser.parse_args()

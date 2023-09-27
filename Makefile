@@ -1,3 +1,15 @@
+# *************************************************************************** #
+#                                                                             #
+#                                                        :::      ::::::::    #
+#    Makefile                                          :+:      :+:    :+:    #
+#                                                    +:+ +:+         +:+      #
+#    By: cmariot <contact@charles-mariot.fr>       +#+  +:+       +#+         #
+#                                                +#+#+#+#+#+   +#+            #
+#    Created: 2023/09/27 12:56:40 by cmariot          #+#    #+#              #
+#    Updated: 2023/09/27 12:57:32 by cmariot         ###   ########.fr        #
+#                                                                             #
+# *************************************************************************** #
+
 PYTHON=python3
 
 all: split train predict
@@ -17,4 +29,4 @@ clean:
 	rm -rf datasets/train.csv
 	rm -rf datasets/validation.csv
 
-.PHONY: all split train predict cd_split cd_train cd_predict
+.PHONY: all split train predict clean

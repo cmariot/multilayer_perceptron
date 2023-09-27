@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>           +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/24 14:39:26 by cmariot          #+#    #+#              #
-#    Updated: 2023/09/26 18:05:12 by cmariot         ###   ########.fr        #
+#    Updated: 2023/09/27 13:00:51 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
@@ -65,14 +65,14 @@ def parse_arguments():
             "--batch_size",
             type=int,
             help="Size of the batch used to train the model",
-            default=32
+            default=64
         )
 
         parser.add_argument(
             "--learning_rate",
             type=float,
             help="Initial learning rate of the model",
-            default=0.05
+            default=0.06
         )
 
         parser.add_argument(

@@ -1,33 +1,33 @@
 # *************************************************************************** #
 #                                                                             #
 #                                                        :::      ::::::::    #
-#    precision.py                                      :+:      :+:    :+:    #
+#    f1_score.py                                       :+:      :+:    :+:    #
 #                                                    +:+ +:+         +:+      #
 #    By: cmariot <cmariot@student.42.fr>           +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
-#    Created: 2023/08/24 14:39:55 by cmariot          #+#    #+#              #
-#    Updated: 2023/08/24 14:39:56 by cmariot         ###   ########.fr        #
+#    Created: 2023/08/24 14:39:58 by cmariot          #+#    #+#              #
+#    Updated: 2023/09/27 11:14:53 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
 import numpy as np
+from multilayer_perceptron.Metrics.precision import precision_score_
+from multilayer_perceptron.Metrics.recall import recall_score_
 
 
-def precision_score_(y, y_hat, pos_label=1):
+def f1_score_(y, y_hat, pos_label=1):
     """
-    Compute the precision score.
-    Precision tells you how much you can trust your
-    model when it says that an object belongs to Class A.
-    More precisely, it is the percentage of the objects
-    assigned to Class A that really were A objects.
-    You use precision when you want to control for False positives.
+    Compute the f1 score.
+    F1 score combines precision and recall in one single measure.
+    You use the F1 score when want to control both
+    False positives and False negatives.
     Args:
         y: a numpy.ndarray for the correct labels
         y_hat: a numpy.ndarray for the predicted labels
         pos_label: str or int, the class on which to report
                 the precision_score (default=1)
-    Return:
-        The precision score as a float.
+    Returns:
+        The f1 score as a float.
         None on any error.
     Raises:
         This function should not raise any Exception.
@@ -46,13 +46,15 @@ def precision_score_(y, y_hat, pos_label=1):
         if not isinstance(pos_label, (int, str)):
             return None
 
-        tp = np.sum(np.logical_and(y == pos_label, y == y_hat))
-        fp = np.sum(np.logical_and(y != pos_label, y_hat == pos_label))
+        precision = precision_score_(y, y_hat, pos_label)
+        recall = recall_score_(y, y_hat, pos_label)
 
-        if tp + fp == 0:
+        if precision is None or recall is None:
+            return 0.0
+        if precision + recall == 0:
             return 0.0
 
-        return tp / (tp + fp)
+        return 2 * (precision * recall) / (precision + recall)
 
     except Exception:
-        return 0
+        return 0.0

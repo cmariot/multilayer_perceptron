@@ -1,3 +1,15 @@
+# *************************************************************************** #
+#                                                                             #
+#                                                        :::      ::::::::    #
+#    softmax.py                                        :+:      :+:    :+:    #
+#                                                    +:+ +:+         +:+      #
+#    By: cmariot <contact@charles-mariot.fr>       +#+  +:+       +#+         #
+#                                                +#+#+#+#+#+   +#+            #
+#    Created: 2023/09/27 11:17:41 by cmariot          #+#    #+#              #
+#    Updated: 2023/09/27 11:17:47 by cmariot         ###   ########.fr        #
+#                                                                             #
+# *************************************************************************** #
+
 import numpy as np
 
 
@@ -28,4 +40,3 @@ class SoftmaxActivation:
             )
             self.dinputs[index] = np.dot(jacobian_matrix, single_dvalues)
         return self.dinputs
-

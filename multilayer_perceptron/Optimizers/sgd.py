@@ -1,3 +1,15 @@
+# *************************************************************************** #
+#                                                                             #
+#                                                        :::      ::::::::    #
+#    sgd.py                                            :+:      :+:    :+:    #
+#                                                    +:+ +:+         +:+      #
+#    By: cmariot <contact@charles-mariot.fr>       +#+  +:+       +#+         #
+#                                                +#+#+#+#+#+   +#+            #
+#    Created: 2023/09/27 11:18:45 by cmariot          #+#    #+#              #
+#    Updated: 2023/09/27 11:18:46 by cmariot         ###   ########.fr        #
+#                                                                             #
+# *************************************************************************** #
+
 class StandardGradientDescent:
 
     def __init__(self, learning_rate, decay, momentum):
@@ -21,7 +33,7 @@ class StandardGradientDescent:
             layer.weight_momentums = weight_updates
 
             bias_updates = self.momentum * layer.bias_momentums - \
-                    self.current_learning_rate * layer.dbiases
+                self.current_learning_rate * layer.dbiases
             layer.bias_momentums = bias_updates
 
         else:

@@ -1,33 +1,33 @@
 # *************************************************************************** #
 #                                                                             #
 #                                                        :::      ::::::::    #
-#    f1_score.py                                       :+:      :+:    :+:    #
+#    recall.py                                         :+:      :+:    :+:    #
 #                                                    +:+ +:+         +:+      #
 #    By: cmariot <cmariot@student.42.fr>           +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
-#    Created: 2023/08/24 14:39:58 by cmariot          #+#    #+#              #
-#    Updated: 2023/08/24 14:39:59 by cmariot         ###   ########.fr        #
+#    Created: 2023/08/24 14:39:52 by cmariot          #+#    #+#              #
+#    Updated: 2023/08/24 14:39:53 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
 import numpy as np
-from Metrics.precision import precision_score_
-from Metrics.recall import recall_score_
 
 
-def f1_score_(y, y_hat, pos_label=1):
+def recall_score_(y, y_hat, pos_label=1):
     """
-    Compute the f1 score.
-    F1 score combines precision and recall in one single measure.
-    You use the F1 score when want to control both
-    False positives and False negatives.
+    Compute the recall score.
+    Recall tells you how much you can trust that your
+    model is able to recognize ALL Class A objects.
+    It is the percentage of all A objects that were properly
+    classified by the model as Class A.
+    You use recall when you want to control for False negatives.
     Args:
-        y: a numpy.ndarray for the correct labels
-        y_hat: a numpy.ndarray for the predicted labels
+        y:a numpy.ndarray for the correct labels
+        y_hat:a numpy.ndarray for the predicted labels
         pos_label: str or int, the class on which to report
                 the precision_score (default=1)
-    Returns:
-        The f1 score as a float.
+    Return:
+        The recall score as a float.
         None on any error.
     Raises:
         This function should not raise any Exception.
@@ -46,15 +46,13 @@ def f1_score_(y, y_hat, pos_label=1):
         if not isinstance(pos_label, (int, str)):
             return None
 
-        precision = precision_score_(y, y_hat, pos_label)
-        recall = recall_score_(y, y_hat, pos_label)
+        tp = np.sum(np.logical_and(y == pos_label, y == y_hat))
+        fn = np.sum(np.logical_and(y == pos_label, y_hat != pos_label))
 
-        if precision is None or recall is None:
-            return 0.0
-        if precision + recall == 0:
+        if tp + fn == 0:
             return 0.0
 
-        return 2 * (precision * recall) / (precision + recall)
+        return tp / (tp + fn)
 
     except Exception:
-        return 0.0
+        return None

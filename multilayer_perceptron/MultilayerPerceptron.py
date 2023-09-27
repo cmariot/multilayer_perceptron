@@ -6,14 +6,18 @@
 #    By: cmariot <contact@charles-mariot.fr>       +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/26 14:41:05 by cmariot          #+#    #+#              #
-#    Updated: 2023/09/26 15:53:23 by cmariot         ###   ########.fr        #
+#    Updated: 2023/09/27 11:14:19 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
-from layer import Layer
-from Loss.binary_cross_entropy import BinaryCrossEntropy_Loss
-from Optimizers.sgd import StandardGradientDescent
 import pickle
+
+from multilayer_perceptron.layer\
+        import Layer
+from multilayer_perceptron.Loss.binary_cross_entropy \
+        import BinaryCrossEntropy_Loss
+from multilayer_perceptron.Optimizers.sgd \
+        import StandardGradientDescent
 
 
 class MultilayerPerceptron:

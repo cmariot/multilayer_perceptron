@@ -1,9 +1,22 @@
+# *************************************************************************** #
+#                                                                             #
+#                                                        :::      ::::::::    #
+#    predict.py                                        :+:      :+:    :+:    #
+#                                                    +:+ +:+         +:+      #
+#    By: cmariot <contact@charles-mariot.fr>       +#+  +:+       +#+         #
+#                                                +#+#+#+#+#+   +#+            #
+#    Created: 2023/09/27 11:21:00 by cmariot          #+#    #+#              #
+#    Updated: 2023/09/27 11:27:08 by cmariot         ###   ########.fr        #
+#                                                                             #
+# *************************************************************************** #
+
 import argparse
 import pickle
-from MultilayerPerceptron import MultilayerPerceptron
 import pandas
 import numpy as np
-from Metrics.accuracy import accuracy_score_
+
+from multilayer_perceptron.MultilayerPerceptron import MultilayerPerceptron
+from multilayer_perceptron.Metrics.accuracy import accuracy_score_
 
 
 def parse_arguments():
@@ -22,7 +35,7 @@ def parse_arguments():
             "--model_path",
             type=str,
             help="Path to the trained Multilayer Perceptron model",
-            default="./model.pkl"
+            default="../model.pkl"
         )
 
         args = parser.parse_args()
@@ -73,11 +86,8 @@ if __name__ == "__main__":
     # Load the dataset
     x, y = load_dataset(predict_path)
 
-    print(x)
     # Normalize the features
-    x_min = model.x_min
-    x_max = model.x_max
-    x_norm = (x - x_min) / (x_max - x_min)
+    x_norm = (x - model.x_min) / (model.x_max - model.x_min)
 
     # Predict the target
     y_pred = model.forward(x_norm)

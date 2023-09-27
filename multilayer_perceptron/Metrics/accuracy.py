@@ -1,3 +1,15 @@
+# *************************************************************************** #
+#                                                                             #
+#                                                        :::      ::::::::    #
+#    accuracy.py                                       :+:      :+:    :+:    #
+#                                                    +:+ +:+         +:+      #
+#    By: cmariot <contact@charles-mariot.fr>       +#+  +:+       +#+         #
+#                                                +#+#+#+#+#+   +#+            #
+#    Created: 2023/09/27 11:15:02 by cmariot          #+#    #+#              #
+#    Updated: 2023/09/27 11:15:55 by cmariot         ###   ########.fr        #
+#                                                                             #
+# *************************************************************************** #
+
 import numpy as np
 
 
@@ -31,4 +43,3 @@ def accuracy_score_(y, y_hat):
     except Exception as error:
         print(error)
         exit()
-

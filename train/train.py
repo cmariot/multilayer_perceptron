@@ -6,22 +6,22 @@
 #    By: cmariot <contact@charles-mariot.fr>       +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/26 13:59:17 by cmariot          #+#    #+#              #
-#    Updated: 2023/09/26 17:59:26 by cmariot         ###   ########.fr        #
+#    Updated: 2023/09/27 11:20:07 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
 import numpy as np
 import matplotlib.pyplot as plt
-from parse_arguments import parse_arguments
-from get_datasets import (get_training_data,
-                          get_validation_data)
-from MultilayerPerceptron import MultilayerPerceptron
-from ft_progress import ft_progress
-from Metrics.accuracy import accuracy_score_
-from Metrics.precision import precision_score_
-from Metrics.recall import recall_score_
-from Metrics.f1_score import f1_score_
-from Metrics.confusion_matrix import confusion_matrix_
+from multilayer_perceptron.parse_arguments import parse_arguments
+from multilayer_perceptron.get_datasets import (get_training_data,
+                                                get_validation_data)
+from multilayer_perceptron.MultilayerPerceptron import MultilayerPerceptron
+from multilayer_perceptron.ft_progress import ft_progress
+from multilayer_perceptron.Metrics.accuracy import accuracy_score_
+from multilayer_perceptron.Metrics.precision import precision_score_
+from multilayer_perceptron.Metrics.recall import recall_score_
+from multilayer_perceptron.Metrics.f1_score import f1_score_
+from multilayer_perceptron.Metrics.confusion_matrix import confusion_matrix_
 
 
 def header():
@@ -201,7 +201,7 @@ if __name__ == "__main__":
             validation_metrics
         )
 
-    model.save_model("model.pkl")
+    model.save_model("../model.pkl")
 
     # Print the last value of loss and accuracy
     print("\nTraining metrics :")

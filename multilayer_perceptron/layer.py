@@ -6,7 +6,7 @@
 #    By: cmariot <contact@charles-mariot.fr>       +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/27 11:13:17 by cmariot          #+#    #+#              #
-#    Updated: 2023/09/27 11:13:22 by cmariot         ###   ########.fr        #
+#    Updated: 2023/09/28 15:07:15 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
@@ -37,7 +37,7 @@ class Layer:
         # Weights and biases init
         self.weights = \
             (np.sqrt(2.0 / n_inputs)) * np.random.randn(n_inputs, n_neurons)
-        self.biases = np.ones((1, n_neurons))
+        self.biases = np.zeros((1, n_neurons))
 
         # Momentums : for momentum optimizer
         self.weight_momentums = np.zeros_like(self.weights)
@@ -49,20 +49,9 @@ class Layer:
         self.activation_function = \
             self.activation_functions[activation_function]()
 
-    def iterative_forward(self, neurons):
-        """
-        Unoptimized forward pass for a layer of neurons
-        The output of a neuron is the sum of the weighted inputs plus the bias
-        """
-        self.output = []
-        for neuron in neurons:
-            self.output.append(neuron.forward())
-        return self.output
-
     def forward(self, input):
         self.input = input
         self.output = np.dot(input, self.weights) + self.biases
-        # self.output = self.activation_function.forward(self.weighted_sum)
         return self.output
 
     def backward(self, dvalues):

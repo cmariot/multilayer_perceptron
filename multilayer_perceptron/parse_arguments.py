@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>           +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/24 14:39:26 by cmariot          #+#    #+#              #
-#    Updated: 2023/09/27 13:00:51 by cmariot         ###   ########.fr        #
+#    Updated: 2023/09/28 19:39:27 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
@@ -36,7 +36,7 @@ def parse_arguments():
             type=int,
             nargs="+",
             help="Number of neurons in each layer",
-            default=[30, 24, 24, 2]
+            default=[30, 60, 60, 2]
         )
 
         parser.add_argument(
@@ -58,36 +58,21 @@ def parse_arguments():
             "--epochs",
             type=int,
             help="Number of epochs to train the model",
-            default=500
+            default=400
         )
 
         parser.add_argument(
             "--batch_size",
             type=int,
             help="Size of the batch used to train the model",
-            default=64
+            default=32
         )
 
         parser.add_argument(
             "--learning_rate",
             type=float,
             help="Initial learning rate of the model",
-            default=0.06
-        )
-
-        parser.add_argument(
-            "--decay",
-            type=float,
-            help="Decay of the learning rate, used to reduce it over time",
-            default=0.01
-        )
-
-        parser.add_argument(
-            "--momentum",
-            type=float,
-            help="Momentum of the model, used to accelerate the learning" +
-            " and avoid local minima",
-            default=0.9
+            default=0.075
         )
 
         args = parser.parse_args()
@@ -101,8 +86,6 @@ def parse_arguments():
             args.epochs,
             args.batch_size,
             args.learning_rate,
-            args.decay,
-            args.momentum
         )
 
     except Exception as error:

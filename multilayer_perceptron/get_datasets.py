@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>           +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/24 19:51:57 by cmariot          #+#    #+#              #
-#    Updated: 2023/08/24 19:52:01 by cmariot         ###   ########.fr        #
+#    Updated: 2023/09/28 13:01:10 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
@@ -64,9 +64,13 @@ def get_training_data(dataset_path: str) -> tuple:
                 for y in y_train
             ]
         )
+
+        training_set = np.concatenate((x_train_norm, y_train), axis=1)
+
         return (
             x_train_norm,
             y_train,
+            training_set,
             x_min,
             x_max
         )

@@ -6,7 +6,7 @@
 #    By: cmariot <contact@charles-mariot.fr>       +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/26 14:41:05 by cmariot          #+#    #+#              #
-#    Updated: 2023/09/28 16:32:55 by cmariot         ###   ########.fr        #
+#    Updated: 2023/10/01 11:44:56 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
@@ -54,16 +54,11 @@ class MultilayerPerceptron:
             # Layers initialization
             self.layers = []
             for i in range(len(n_neurons)):
-
-                n_input = n_neurons[0] if i == 0 else n_neurons[i - 1]
-                n_output = n_neurons[i]
-                activation = activations[i]
-
                 self.layers.append(
                     Layer(
-                        n_input,
-                        n_output,
-                        activation
+                        n_neurons[0] if i == 0 else n_neurons[i - 1],
+                        n_neurons[i],
+                        activations[i]
                     )
                 )
 
@@ -73,14 +68,7 @@ class MultilayerPerceptron:
             self.loss = self.available_losses[loss_name]
 
             # Optimizer initialization
-            self.optimizer = StandardGradientDescent(
-                learning_rate,
-                # decay,
-                # momentum
-            )
-
-            # Learning rates evolution
-            self.learning_rates = []
+            self.optimizer = StandardGradientDescent(learning_rate)
 
             # Training parameters initialization
             self.epochs = epochs
@@ -190,7 +178,11 @@ class MultilayerPerceptron:
                 self.forward(x_batch)
                 self.backward(y_batch)
                 self.optimize()
-            self.compute_metrics(x_train_norm, y_train, self.training_metrics)
+            self.compute_metrics(
+                    x_train_norm,
+                    y_train,
+                    self.training_metrics
+            )
             self.compute_metrics(
                     x_validation_norm,
                     y_validation,

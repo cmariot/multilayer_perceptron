@@ -6,15 +6,13 @@
 #    By: cmariot <contact@charles-mariot.fr>       +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/27 11:18:45 by cmariot          #+#    #+#              #
-#    Updated: 2023/09/28 13:06:16 by cmariot         ###   ########.fr        #
+#    Updated: 2023/09/30 12:20:26 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
 class StandardGradientDescent:
 
-    def __init__(self,
-                 learning_rate,
-                 ):
+    def __init__(self, learning_rate):
         self.learning_rate = learning_rate
 
     def update(self, layer):

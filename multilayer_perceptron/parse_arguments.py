@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>           +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/24 14:39:26 by cmariot          #+#    #+#              #
-#    Updated: 2023/09/28 19:39:27 by cmariot         ###   ########.fr        #
+#    Updated: 2023/09/30 12:43:19 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
@@ -36,7 +36,7 @@ def parse_arguments():
             type=int,
             nargs="+",
             help="Number of neurons in each layer",
-            default=[30, 60, 60, 2]
+            default=[30, 24, 24, 2]
         )
 
         parser.add_argument(
@@ -58,7 +58,7 @@ def parse_arguments():
             "--epochs",
             type=int,
             help="Number of epochs to train the model",
-            default=400
+            default=150
         )
 
         parser.add_argument(

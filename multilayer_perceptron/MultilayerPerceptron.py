@@ -6,7 +6,7 @@
 #    By: cmariot <contact@charles-mariot.fr>       +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/26 14:41:05 by cmariot          #+#    #+#              #
-#    Updated: 2023/10/01 11:44:56 by cmariot         ###   ########.fr        #
+#    Updated: 2023/10/02 11:45:26 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
@@ -131,7 +131,6 @@ class MultilayerPerceptron:
             exit()
 
     def optimize(self):
-        self.learning_rates.append(self.optimizer.learning_rate)
         for layer in self.layers:
             self.optimizer.update(layer)
 

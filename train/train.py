@@ -6,7 +6,7 @@
 #    By: cmariot <contact@charles-mariot.fr>       +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/26 13:59:17 by cmariot          #+#    #+#              #
-#    Updated: 2023/09/30 12:46:04 by cmariot         ###   ########.fr        #
+#    Updated: 2023/10/02 11:39:31 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
@@ -16,7 +16,6 @@ from multilayer_perceptron.parse_arguments import parse_arguments
 from multilayer_perceptron.get_datasets import (get_training_data,
                                                 get_validation_data)
 from multilayer_perceptron.MultilayerPerceptron import MultilayerPerceptron
-from multilayer_perceptron.Metrics.confusion_matrix import confusion_matrix_
 import pandas
 import numpy as np
 
@@ -38,21 +37,45 @@ def header():
 
 
 def print_metrics(training_metrics, validation_metrics):
-    # Print a dataframe with the loss metrics
-    loss_dataframe = {
-        "Epoch": range(1, len(training_metrics["loss"]) + 1),
-        "Training loss": training_metrics["loss"],
-        "Validation loss": validation_metrics["loss"]
+
+    # Dataframe with the last value of the training and validation metrics
+    metrics_dataframe = {
+        "Training": [
+            training_metrics["loss"][-1],
+            training_metrics["accuracy"][-1],
+            training_metrics["recall"][-1],
+            training_metrics["precision"][-1],
+            training_metrics["f1_score"][-1]
+        ],
+        "Validation": [
+            validation_metrics["loss"][-1],
+            validation_metrics["accuracy"][-1],
+            validation_metrics["recall"][-1],
+            validation_metrics["precision"][-1],
+            validation_metrics["f1_score"][-1]
+        ]
     }
-    # Do not print the index column
-    print("\n", pandas.DataFrame(loss_dataframe).to_string(index=False))
-    # Print the last value of loss and accuracy
-    print("\nTraining metrics :")
-    print("Loss: ", training_metrics["loss"][-1])
-    print("Accuracy: ", training_metrics["accuracy"][-1])
-    print("Recall: ", training_metrics["recall"][-1])
-    print("Precision: ", training_metrics["precision"][-1])
-    print("F1 score: ", training_metrics["f1_score"][-1])
+    # Print the dataframe
+    print("\n", pandas.DataFrame(metrics_dataframe, index=[
+        "Loss",
+        "Accuracy",
+        "Recall",
+        "Precision",
+        "F1 score"
+    ]).to_string())
+
+
+def plot_metrics(training_metrics, validation_metrics):
+    # Create a figure with 4 subplots
+    fig, axs = plt.subplots(2, 2, figsize=(15, 9))
+    for metric, ax in zip(training_metrics, axs.flat):
+        ax.set_title(metric)
+        ax.plot(training_metrics[metric], label="Training")
+        ax.plot(validation_metrics[metric], label="Validation")
+        ax.legend()
+        ax.set_ylim([0, 1.1])
+    plt.legend()
+    plt.show()
 
 
 def plot_loss(training_metrics, validation_metrics):
@@ -63,34 +86,34 @@ def plot_loss(training_metrics, validation_metrics):
     plt.show()
 
 
-def plot_confusion_matrix(cm, classes, title, cmap=plt.cm.Blues):
-    """
-    This function prints and plots the confusion matrix.
-    """
-    plt.figure()
-    plt.imshow(cm, interpolation="nearest", cmap=cmap)
-    plt.title(title)
-    plt.colorbar()
-    tick_marks = np.arange(len(classes))
-    plt.xticks(tick_marks, classes, rotation=45, ha="right")
-    plt.yticks(tick_marks, classes)
-    # Put the values inside the confusion matrix
-    for i in range(cm.shape[0]):
-        for j in range(cm.shape[1]):
-            # Put the values inside the confusion matrix
-            value = cm.iloc[i, j]
-            plt.text(
-                j,
-                i,
-                format(cm.iloc[i, j], "d"),
-                ha="center",
-                va="center",
-                color="white" if value > 100 else "black"
-            )
-    plt.tight_layout()
-    plt.ylabel("True label")
-    plt.xlabel("Predicted label")
-    plt.show()
+# def plot_confusion_matrix(cm, classes, title, cmap=plt.cm.Blues):
+#     """
+#     This function prints and plots the confusion matrix.
+#     """
+#     plt.figure()
+#     plt.imshow(cm, interpolation="nearest", cmap=cmap)
+#     plt.title(title)
+#     plt.colorbar()
+#     tick_marks = np.arange(len(classes))
+#     plt.xticks(tick_marks, classes, rotation=45, ha="right")
+#     plt.yticks(tick_marks, classes)
+#     # Put the values inside the confusion matrix
+#     for i in range(cm.shape[0]):
+#         for j in range(cm.shape[1]):
+#             # Put the values inside the confusion matrix
+#             value = cm.iloc[i, j]
+#             plt.text(
+#                 j,
+#                 i,
+#                 format(cm.iloc[i, j], "d"),
+#                 ha="center",
+#                 va="center",
+#                 color="white" if value > 100 else "black"
+#             )
+#     plt.tight_layout()
+#     plt.ylabel("True label")
+#     plt.xlabel("Predicted label")
+#     plt.show()
 
 
 if __name__ == "__main__":
@@ -171,37 +194,16 @@ if __name__ == "__main__":
     # Test the model  #
     # ############### #
 
-    # Metrics :
-    training_metrics = model.training_metrics
-    validation_metrics = model.validation_metrics
-    train_y_hat = model.predict(x_train_norm)
-    validation_y_hat = model.predict(x_validation_norm)
-
-    print_metrics(training_metrics, validation_metrics)
-
-    # Confusion matrix :
-    print("\nConfusion matrix on the training set:\n\n")
-    cm = confusion_matrix_(y_train, train_y_hat, df_option=True)
-    print("\nConfusion matrix on the validation set:\n\n")
-    confusion_matrix_(y_validation, validation_y_hat, df_option=True)
+    print_metrics(model.training_metrics, model.validation_metrics)
 
     # Plot the loss of the training and validation sets on the same graph
-    plot_loss(training_metrics, validation_metrics)
+    plot_loss(model.training_metrics, model.validation_metrics)
 
-    # Plot the confusion matrix on the training set
-    plot_confusion_matrix(
-        cm,
-        classes=["Malignant", "Benign"],
-        title="Confusion matrix on the training set"
-    )
+    # Plot the confusion matrix on the validation set
+    # plot_confusion_matrix(
+    #     confusion_matrix_(y_validation, validation_y_hat, df_option=True),
+    #     classes=["Malignant", "Benign"],
+    #     title="Confusion matrix on the training set"
+    # )
 
-    # Create a figure with 4 subplots
-    fig, axs = plt.subplots(2, 2, figsize=(15, 9))
-    for metric, ax in zip(training_metrics, axs.flat):
-        ax.set_title(metric)
-        ax.plot(training_metrics[metric], label="Training")
-        ax.plot(validation_metrics[metric], label="Validation")
-        ax.legend()
-        ax.set_ylim([0, 1.1])
-    plt.legend()
-    plt.show()
+    plot_metrics(model.training_metrics, model.validation_metrics)

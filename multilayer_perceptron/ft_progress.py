@@ -6,7 +6,7 @@
 #    By: cmariot <contact@charles-mariot.fr>       +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/27 11:13:10 by cmariot          #+#    #+#              #
-#    Updated: 2023/09/28 15:28:58 by cmariot         ###   ########.fr        #
+#    Updated: 2023/10/02 11:40:34 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
@@ -39,7 +39,7 @@ def ft_progress(iterable,
         Return the Estimed Time Arrival as str.
         """
         if eta == 0.0:
-            return ' [DONE]                         '
+            return ' [DONE]                        '
         elif eta < 60:
             return f' [{eta:.0f} s remaining]       '
         elif eta < 3600:

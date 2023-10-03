@@ -6,7 +6,7 @@
 #    By: cmariot <contact@charles-mariot.fr>       +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/26 14:41:05 by cmariot          #+#    #+#              #
-#    Updated: 2023/10/02 11:45:26 by cmariot         ###   ########.fr        #
+#    Updated: 2023/10/03 09:43:31 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
@@ -41,6 +41,7 @@ class MultilayerPerceptron:
                  n_neurons,
                  activations,
                  loss_name,
+                 optimizer_name,
                  epochs,
                  batch_size,
                  x_min,
@@ -68,7 +69,11 @@ class MultilayerPerceptron:
             self.loss = self.available_losses[loss_name]
 
             # Optimizer initialization
-            self.optimizer = StandardGradientDescent(learning_rate)
+            if optimizer_name not in self.available_optimizers:
+                raise Exception("Optimizer not available")
+            self.optimizer = self.available_optimizers[optimizer_name](
+                    learning_rate
+            )
 
             # Training parameters initialization
             self.epochs = epochs

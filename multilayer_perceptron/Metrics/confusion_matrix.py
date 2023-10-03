@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>           +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/24 14:40:02 by cmariot          #+#    #+#              #
-#    Updated: 2023/09/27 11:15:42 by cmariot         ###   ########.fr        #
+#    Updated: 2023/10/03 08:52:45 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
@@ -62,5 +62,6 @@ def confusion_matrix_(y_true, y_hat, labels=None, df_option=False):
         print(cm, "\n")
         return cm
 
-    except Exception:
+    except Exception as error:
+        print("Error:", error)
         return None

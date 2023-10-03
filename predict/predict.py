@@ -6,7 +6,7 @@
 #    By: cmariot <contact@charles-mariot.fr>       +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/27 11:21:00 by cmariot          #+#    #+#              #
-#    Updated: 2023/09/27 11:27:08 by cmariot         ###   ########.fr        #
+#    Updated: 2023/10/03 09:33:21 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
@@ -14,9 +14,14 @@ import argparse
 import pickle
 import pandas
 import numpy as np
+import matplotlib.pyplot as plt
 
 from multilayer_perceptron.MultilayerPerceptron import MultilayerPerceptron
 from multilayer_perceptron.Metrics.accuracy import accuracy_score_
+from multilayer_perceptron.Metrics.precision import precision_score_
+from multilayer_perceptron.Metrics.recall import recall_score_
+from multilayer_perceptron.Metrics.f1_score import f1_score_
+from multilayer_perceptron.Metrics.confusion_matrix import confusion_matrix_
 
 
 def parse_arguments():
@@ -72,6 +77,36 @@ def load_dataset(path: str) -> object:
         exit()
 
 
+def plot_confusion_matrix(cm, classes, title, cmap=plt.cm.Blues):
+    """
+    This function prints and plots the confusion matrix.
+    """
+    plt.figure()
+    plt.imshow(cm, interpolation="nearest", cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45, ha="right")
+    plt.yticks(tick_marks, classes)
+    # Put the values inside the confusion matrix
+    for i in range(cm.shape[0]):
+        for j in range(cm.shape[1]):
+            # Put the values inside the confusion matrix
+            value = cm.iloc[i, j]
+            plt.text(
+                j,
+                i,
+                format(cm.iloc[i, j], "d"),
+                ha="center",
+                va="center",
+                color="white" if value > 100 else "black"
+            )
+    plt.tight_layout()
+    plt.ylabel("True label")
+    plt.xlabel("Predicted label")
+    plt.show()
+
+
 if __name__ == "__main__":
 
     # Parse command line arguments
@@ -91,9 +126,46 @@ if __name__ == "__main__":
 
     # Predict the target
     y_pred = model.forward(x_norm)
-    y_pred = np.argmax(y_pred, axis=1)
-    y_pred = np.where(y_pred == 0, "M", "B")
+    y_hat = np.argmax(y_pred, axis=1)
+    y_pred = np.array(
+        [
+            [1, 0] if _y == 0
+            else [0, 1]
+            for _y in y_hat
+        ]
+    )
     y = y.to_numpy()
+    y = np.array(
+        [
+            [1, 0] if _y == "M"
+            else [0, 1]
+            for _y in y
+        ]
+    )
 
-    accuracy = accuracy_score_(y, y_pred)
-    print(f"Accuracy: {accuracy}")
+    y_pred_ = model.forward(x_norm)
+    y_hat_ = np.argmax(y_pred, axis=1)
+    y_ = np.argmax(y, axis=1)
+    df = pandas.DataFrame(
+        {
+            "Accuracy": accuracy_score_(y_, y_hat_),
+            "Recall": recall_score_(y_, y_hat_),
+            "Precision": precision_score_(y_, y_hat_),
+            "F1": f1_score_(y_, y_hat_)
+        },
+        index=["Validation set"]
+
+    )
+    print(df, "\n")
+
+    # Plot the confusion matrix on the validation set
+    plot_confusion_matrix(
+        confusion_matrix_(y, y_hat, df_option=True),
+        classes=["Malignant", "Benign"],
+        title="Confusion matrix on the training set"
+    )
+
+    # Save the predictions in a csv file
+    y_pred = np.where(y_hat == 0, "M", "B")
+    y_pred = pandas.DataFrame(y_pred, columns=["Diagnosis"])
+    y_pred.to_csv("../datasets/predictions.csv", index=False)

@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>           +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/24 14:39:26 by cmariot          #+#    #+#              #
-#    Updated: 2023/09/30 12:43:19 by cmariot         ###   ########.fr        #
+#    Updated: 2023/10/03 09:45:34 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
@@ -55,6 +55,13 @@ def parse_arguments():
         )
 
         parser.add_argument(
+            "--optimizer",
+            type=str,
+            help="Name of the optimizer function to use",
+            default="sgd"
+        )
+
+        parser.add_argument(
             "--epochs",
             type=int,
             help="Number of epochs to train the model",
@@ -83,6 +90,7 @@ def parse_arguments():
             args.n_neurons,
             args.activations,
             args.loss,
+            args.optimizer,
             args.epochs,
             args.batch_size,
             args.learning_rate,

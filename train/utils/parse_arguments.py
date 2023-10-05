@@ -72,7 +72,7 @@ def parse_arguments():
             "--batch_size",
             type=int,
             help="Size of the batch used to train the model",
-            default=32
+            default=64
         )
 
         parser.add_argument(

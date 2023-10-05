@@ -37,17 +37,11 @@ def confusion_matrix_(y_true, y_hat, labels=None, df_option=False):
     try:
         if not isinstance(y_true, np.ndarray) \
                 or not isinstance(y_hat, np.ndarray):
-            print("Not a numpy array")
-            return None
-        y_true = y_true.argmax(axis=1)
+            raise TypeError("y_true and y_hat must be numpy.ndarray")
         if y_true.shape != y_hat.shape:
-            print("Shape error")
-            print("y_true shape:", y_true.shape)
-            print("y_hat shape:", y_hat.shape)
-            return None
+            raise ValueError("y_true and y_hat must have the same shape")
         if y_true.size == 0 or y_hat.size == 0:
-            print("Empty array")
-            return None
+            raise ValueError("y_true and y_hat must not be empty")
         y_hat = np.where(y_hat == 0, "Malignant", "Benign")
         y_true = np.where(y_true == 0, "Malignant", "Benign")
         if labels is None:
@@ -63,5 +57,5 @@ def confusion_matrix_(y_true, y_hat, labels=None, df_option=False):
         return cm
 
     except Exception as error:
-        print("Error:", error)
-        return None
+        print("Error in confusion_matrix_:", error)
+        exit()

@@ -68,8 +68,8 @@ def get_training_data(dataset_path: str) -> tuple:
         training_set = np.concatenate((x_train_norm, y_train), axis=1)
 
         return (
-            x_train_norm,
-            y_train,
+            x_train_norm.T,
+            y_train.T,
             training_set,
             x_min,
             x_max
@@ -120,7 +120,7 @@ def get_validation_data(
                 for y in y_validation
             ]
         )
-        return x_validation_norm, y_validation
+        return x_validation_norm.T, y_validation.T
 
     except Exception:
         print("Error: can't get the validation data.")

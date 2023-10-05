@@ -6,7 +6,7 @@
 #    By: cmariot <contact@charles-mariot.fr>       +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/27 11:21:00 by cmariot          #+#    #+#              #
-#    Updated: 2023/10/03 09:33:21 by cmariot         ###   ########.fr        #
+#    Updated: 2023/10/05 21:14:50 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
@@ -121,42 +121,26 @@ if __name__ == "__main__":
     # Load the dataset
     x, y = load_dataset(predict_path)
 
-    # Normalize the features
+    # Normalize the features of the dataset and convert it to a numpy array
     x_norm = (x - model.x_min) / (model.x_max - model.x_min)
+    x_norm = x_norm.T.to_numpy()
 
-    # Predict the target
-    y_pred = model.forward(x_norm)
-    y_hat = np.argmax(y_pred, axis=1)
-    y_pred = np.array(
-        [
-            [1, 0] if _y == 0
-            else [0, 1]
-            for _y in y_hat
-        ]
-    )
-    y = y.to_numpy()
-    y = np.array(
-        [
-            [1, 0] if _y == "M"
-            else [0, 1]
-            for _y in y
-        ]
-    )
+    # Convert the targets to a numpy array
+    y = np.where(y == "M", 0, 1)
 
-    y_pred_ = model.forward(x_norm)
-    y_hat_ = np.argmax(y_pred, axis=1)
-    y_ = np.argmax(y, axis=1)
+    # Predict the dataset
+    y_hat = model.predict(x_norm)
+
     df = pandas.DataFrame(
         {
-            "Accuracy": accuracy_score_(y_, y_hat_),
-            "Recall": recall_score_(y_, y_hat_),
-            "Precision": precision_score_(y_, y_hat_),
-            "F1": f1_score_(y_, y_hat_)
+            "Accuracy": accuracy_score_(y, y_hat),
+            "Recall": recall_score_(y, y_hat),
+            "Precision": precision_score_(y, y_hat),
+            "F1": f1_score_(y, y_hat)
         },
         index=["Validation set"]
-
     )
-    print(df, "\n")
+    print(df.T, "\n")
 
     # Plot the confusion matrix on the validation set
     plot_confusion_matrix(

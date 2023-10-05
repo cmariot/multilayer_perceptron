@@ -99,7 +99,7 @@ if __name__ == "__main__":
     # Train the model #
     # ############### #
 
-    input("Press Enter to start training the model...")
+    input("Press Enter to start training the model ...\n")
 
     model.fit(
         training_set,

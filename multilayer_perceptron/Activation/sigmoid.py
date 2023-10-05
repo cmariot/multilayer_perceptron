@@ -6,7 +6,7 @@
 #    By: cmariot <contact@charles-mariot.fr>       +#+  +:+       +#+         #
 #                                                +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/27 11:17:36 by cmariot          #+#    #+#              #
-#    Updated: 2023/09/27 11:17:38 by cmariot         ###   ########.fr        #
+#    Updated: 2023/10/05 21:21:13 by cmariot         ###   ########.fr        #
 #                                                                             #
 # *************************************************************************** #
 
@@ -24,5 +24,6 @@ class SigmoidActivation:
         return self.output
 
     def backward(self, dvalues):
-        self.dinputs = dvalues * (1 - self.output) * self.output
+        sigmoid_derivative = self.output * (1 - self.output)
+        self.dinputs = dvalues * sigmoid_derivative
         return self.dinputs

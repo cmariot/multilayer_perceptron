@@ -1,0 +1,10 @@
+# TODO:
+
+- [ ] MultilayerPerceptron init :
+    - [ ] Check the type of the input parameters
+
+- [ ] Layer init :
+    - [ ] Weights and biases initialization shapes
+    - [ ] Weigths heuniform initialization
+
+

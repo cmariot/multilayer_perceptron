@@ -19,13 +19,6 @@ from multilayer_perceptron.Activation.softmax import SoftmaxActivation
 class Layer:
     """Dense layer"""
 
-    # Available activation functions
-    activation_functions = {
-        "relu": ReluActivation,
-        "sigmoid": SigmoidActivation,
-        "softmax": SoftmaxActivation
-    }
-
     def __init__(self, n_inputs, n_neurons, activation_function):
         """
         Layer condstructor
@@ -36,15 +29,18 @@ class Layer:
         """
 
         # Weights and biases init
-        self.weights = \
-            np.sqrt(2.0 / n_inputs) * np.random.randn(n_inputs, n_neurons)
+        self.weights = np.random.randn(n_inputs, n_neurons)
         self.biases = np.zeros((1, n_neurons))
 
         # Activation function init
-        if activation_function not in self.activation_functions:
+        activation_functions = {
+            "relu": ReluActivation,
+            "sigmoid": SigmoidActivation,
+            "softmax": SoftmaxActivation
+        }
+        if activation_function not in activation_functions:
             raise Exception("Activation function not found")
-        self.activation_function = \
-            self.activation_functions[activation_function]()
+        self.activation_function = activation_functions[activation_function]()
 
     def forward(self, input):
         self.input = input

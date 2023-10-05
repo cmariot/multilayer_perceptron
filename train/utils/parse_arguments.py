@@ -65,7 +65,7 @@ def parse_arguments():
             "--epochs",
             type=int,
             help="Number of epochs to train the model",
-            default=150
+            default=500
         )
 
         parser.add_argument(

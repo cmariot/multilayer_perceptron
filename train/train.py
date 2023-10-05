@@ -89,7 +89,7 @@ if __name__ == "__main__":
         optimizer_name=optimizer_name,
         epochs=epochs,
         batch_size=batch_size,
-        n_train_samples=len(x_train_norm),
+        train_set_shape=x_train_norm.shape,
         learning_rate=learning_rate,
         x_min=x_min,
         x_max=x_max,
@@ -98,6 +98,8 @@ if __name__ == "__main__":
     # ############### #
     # Train the model #
     # ############### #
+
+    input("Press Enter to start training the model...")
 
     model.fit(
         training_set,

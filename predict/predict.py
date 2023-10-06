@@ -133,12 +133,13 @@ if __name__ == "__main__":
 
     df = pandas.DataFrame(
         {
+            "Binary cross entropy loss": model.loss.calculate(y_hat, y),
             "Accuracy": accuracy_score_(y, y_hat),
             "Recall": recall_score_(y, y_hat),
             "Precision": precision_score_(y, y_hat),
             "F1": f1_score_(y, y_hat)
         },
-        index=["Validation set"]
+        index=["Test set"]
     )
     print(df.T, "\n")
 

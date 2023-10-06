@@ -82,6 +82,20 @@ def parse_arguments():
             default=0.075
         )
 
+        parser.add_argument(
+            "--decay",
+            type=float,
+            help="Decay of the learning rate",
+            default=None
+        )
+
+        parser.add_argument(
+            "--momentum",
+            type=float,
+            help="Optimizers momentum",
+            default=None
+        )
+
         args = parser.parse_args()
 
         return (
@@ -94,6 +108,8 @@ def parse_arguments():
             args.epochs,
             args.batch_size,
             args.learning_rate,
+            args.decay,
+            args.momentum
         )
 
     except Exception as error:

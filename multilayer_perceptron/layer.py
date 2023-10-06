@@ -49,11 +49,11 @@ class Layer:
 
         try:
 
-            self.input = input.copy()
+            self.input = input
             return np.dot(self.weights, input) + self.biases
 
-        except Exception:
-            print("Error: can't forward the layer")
+        except Exception as error:
+            print("Error: can't forward the layer,", error)
             exit()
 
     def backward(self, gradient):

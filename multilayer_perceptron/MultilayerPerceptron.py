@@ -47,6 +47,8 @@ class MultilayerPerceptron:
         loss_name: str,          # Loss function,
         optimizer_name: str,     # Optimizer function
         learning_rate: float,    # Initial learning rate
+        decay: float,            # Learning rate decay
+        momentum: float,         # Momentum
         train_set_shape: tuple,  # Shape of the training dataset
         epochs: int,             # Number of epochs
         batch_size: int,         # Batch size
@@ -90,6 +92,7 @@ class MultilayerPerceptron:
 
             available_losses = {
                 "binaryCrossentropy": BinaryCrossEntropy_Loss,
+                # Add more losses here
             }
 
             if loss_name in available_losses:
@@ -106,11 +109,14 @@ class MultilayerPerceptron:
 
             available_optimizers = {
                 "sgd": StandardGradientDescent,
+                # Add more optimizers here
             }
 
             if optimizer_name in available_optimizers:
                 self.optimizer = available_optimizers[optimizer_name](
-                        learning_rate
+                        learning_rate,
+                        decay,
+                        momentum
                 )
             else:
                 raise Exception("Optimizer unavailable")
@@ -121,6 +127,7 @@ class MultilayerPerceptron:
 
             self.epochs = epochs
             self.batch_size = batch_size
+            self.n_samples = n_samples
 
             if batch_size < 1:
                 raise Exception("The batch size must be greater than 0")
@@ -224,6 +231,8 @@ class MultilayerPerceptron:
                     self.backward(output, y_batch)
                     self.optimize()
 
+                self.optimizer.update_learning_rate()
+
         except Exception as error:
             self.fatal_error("MultilayerPerceptron.fit", error)
 
@@ -254,6 +263,7 @@ class MultilayerPerceptron:
                 weigthed_sum = layer.forward(inputs)
                 output = layer.activation_function.forward(weigthed_sum)
                 inputs = output
+            
             return output
 
         except Exception as error:
@@ -330,8 +340,10 @@ class MultilayerPerceptron:
         # ******************************************************************* #
 
         try:
+
             for layer in self.layers:
                 self.optimizer.update(layer)
+
         except Exception as error:
             self.fatal_error("MultilayerPerceptron.optimize", error)
 

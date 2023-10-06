@@ -47,6 +47,8 @@ if __name__ == "__main__":
         epochs,           # Number of epochs
         batch_size,       # Batch size
         learning_rate,    # Initial learning rate
+        decay,            # Decay
+        momentum          # Momentum
     ) = parse_arguments()
 
     # ########################################################### #
@@ -87,10 +89,12 @@ if __name__ == "__main__":
         activations=activations,
         loss_name=loss_name,
         optimizer_name=optimizer_name,
+        learning_rate=learning_rate,
+        decay=decay,
+        momentum=momentum,
         epochs=epochs,
         batch_size=batch_size,
         train_set_shape=x_train_norm.shape,
-        learning_rate=learning_rate,
         x_min=x_min,
         x_max=x_max,
     )

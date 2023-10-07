@@ -79,3 +79,59 @@ def plot_metrics(training_metrics, validation_metrics):
     except Exception as e:
         print(e)
         exit()
+
+
+def plot_loss_and_metrics(training_metrics, validation_metrics):
+    """
+    Plot the loss and the metrics computed on the training and validation sets.
+    The loss and metrics are plotted on the same graph, but because of the
+    different scales, the loss is plotted on the left y-axis and the metrics
+    are plotted on the right y-axis.
+    """
+    try:
+        fig = plt.figure(figsize=(15, 9))
+        fig.suptitle("Loss and accuracy evolution computed during training")
+
+        # Plot the loss on the left y-axis
+        ax1 = fig.add_subplot(111)
+        ax1.set_xlabel("Epochs")
+        ax1.set_ylabel("Loss", color="tab:blue")
+        ax1.plot(
+            training_metrics["loss"],
+            label="Training loss",
+            color="tab:blue"
+        )
+        ax1.plot(
+            validation_metrics["loss"],
+            label="Validation loss",
+            color="tab:blue",
+            linestyle="dotted"
+        )
+        for label in ax1.get_yticklabels():
+            label.set_color("tab:blue")
+
+        # Plot the metrics on the right y-axis
+        ax2 = ax1.twinx()
+        ax2.set_ylabel("Accuracy", color="tab:orange")
+        ax2.plot(
+            training_metrics["accuracy"],
+            label="Training accuracy",
+            color="tab:orange"
+        )
+        ax2.plot(
+            validation_metrics["accuracy"],
+            label="Validation accuracy",
+            color="tab:orange",
+            linestyle="dotted"
+        )
+        for label in ax2.get_yticklabels():
+            label.set_color("tab:orange")
+
+        ax1.legend(loc="upper left")
+        ax2.legend(loc="lower left")
+
+        plt.show()
+
+    except Exception as e:
+        print(e)
+        exit()

@@ -2,6 +2,3 @@
 
 - [ ] MultilayerPerceptron :
     - [ ] __init__ : Check the type of the input parameters
-    - [ ] Real time plotting in a separate thread ?
-	- [ ] Momentum
-	- [ ] 

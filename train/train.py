@@ -14,7 +14,9 @@
 from multilayer_perceptron.MultilayerPerceptron import MultilayerPerceptron
 from utils.parse_arguments import parse_arguments
 from utils.get_datasets import (get_training_data, get_validation_data)
-from utils.plots import (print_metrics, plot_loss, plot_metrics)
+from utils.plots import (
+    print_metrics, plot_loss, plot_metrics, plot_loss_and_metrics
+)
 
 
 def header():
@@ -128,3 +130,7 @@ if __name__ == "__main__":
     # Plot the accuracy, the precision, the recall and the f1-score of
     # the training and validation sets
     plot_metrics(model.training_metrics, model.validation_metrics)
+
+    # Plot the loss and the metrics of the training and validation sets on the
+    # same graph
+    plot_loss_and_metrics(model.training_metrics, model.validation_metrics)

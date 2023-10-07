@@ -15,9 +15,13 @@ import pandas
 import pickle
 
 from multilayer_perceptron.layer import Layer
+
 from multilayer_perceptron.Loss.binary_cross_entropy \
         import BinaryCrossEntropy_Loss
+
 from multilayer_perceptron.Optimizers.sgd import StandardGradientDescent
+from multilayer_perceptron.Optimizers.adagrad import AdaGrad
+
 from multilayer_perceptron.ft_progress import ft_progress
 from multilayer_perceptron.Metrics.accuracy import accuracy_score_
 from multilayer_perceptron.Metrics.precision import precision_score_
@@ -109,6 +113,7 @@ class MultilayerPerceptron:
 
             available_optimizers = {
                 "sgd": StandardGradientDescent,
+                "adagrad": AdaGrad,
                 # Add more optimizers here
             }
 
@@ -263,7 +268,7 @@ class MultilayerPerceptron:
                 weigthed_sum = layer.forward(inputs)
                 output = layer.activation_function.forward(weigthed_sum)
                 inputs = output
-            
+
             return output
 
         except Exception as error:

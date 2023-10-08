@@ -2,3 +2,5 @@
 
 - [ ] MultilayerPerceptron :
     - [ ] __init__ : Check the type of the input parameters
+    - [ ] Adam optimizer
+    - [ ] The implementation of early stopping

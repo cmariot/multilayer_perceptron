@@ -40,8 +40,9 @@ class BinaryCrossEntropy_Loss:
             loss = np.mean(sample_loss)
             return loss
 
-        except Exception:
+        except Exception as error:
             print("Error: can't calculate the Binary Cross Entropy loss")
+            print(error)
             exit()
 
     # Used during the training phase

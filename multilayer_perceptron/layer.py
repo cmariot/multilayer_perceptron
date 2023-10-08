@@ -27,6 +27,9 @@ class Layer:
         activation_function: str  # Activation function to use
     ):
 
+        # Seed init
+        np.random.seed(42)
+
         # Weights and dweights init
         self.weights = np.random.randn(n_neurons, n_inputs)
         self.dweights = np.zeros((n_neurons, n_inputs))

@@ -21,6 +21,7 @@ from multilayer_perceptron.Loss.binary_cross_entropy \
 
 from multilayer_perceptron.Optimizers.sgd import StandardGradientDescent
 from multilayer_perceptron.Optimizers.adagrad import AdaGrad
+from multilayer_perceptron.Optimizers.adam import Adam
 
 from multilayer_perceptron.ft_progress import ft_progress
 from multilayer_perceptron.Metrics.accuracy import accuracy_score_
@@ -112,8 +113,9 @@ class MultilayerPerceptron:
                 raise Exception("The learning rate must be greater than 0")
 
             available_optimizers = {
-                "sgd": StandardGradientDescent,
                 "adagrad": AdaGrad,
+                "adam": Adam,
+                "sgd": StandardGradientDescent,
                 # Add more optimizers here
             }
 
@@ -121,7 +123,8 @@ class MultilayerPerceptron:
                 self.optimizer = available_optimizers[optimizer_name](
                         learning_rate,
                         decay,
-                        momentum
+                        momentum,
+                        
                 )
             else:
                 raise Exception("Optimizer unavailable")

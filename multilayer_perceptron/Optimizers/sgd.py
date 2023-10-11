@@ -35,16 +35,17 @@ class StandardGradientDescent:
             if not hasattr(layer, 'weight_momentums'):
                 layer.weight_momentums = np.zeros_like(layer.weights)
                 layer.bias_momentums = np.zeros_like(layer.biases)
-            weight_updates = \
+
+            layer.weight_momentums = \
                 self.momentum * layer.weight_momentums - \
                 self.current_learning_rate * layer.dweights
-            layer.weight_momentums = weight_updates
-            bias_updates = \
+
+            layer.bias_momentums = \
                 self.momentum * layer.bias_momentums - \
                 self.current_learning_rate * layer.dbiases
-            layer.bias_momentums = bias_updates
-            layer.weights += weight_updates
-            layer.biases += bias_updates
+
+            layer.weights += layer.weight_momentums
+            layer.biases += layer.bias_momentums
 
         # Default SGD
         else:

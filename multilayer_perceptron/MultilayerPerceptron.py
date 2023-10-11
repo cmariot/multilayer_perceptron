@@ -20,7 +20,6 @@ from multilayer_perceptron.Loss.binary_cross_entropy \
         import BinaryCrossEntropy_Loss
 
 from multilayer_perceptron.Optimizers.sgd import StandardGradientDescent
-from multilayer_perceptron.Optimizers.adagrad import AdaGrad
 from multilayer_perceptron.Optimizers.adam import Adam
 
 from multilayer_perceptron.ft_progress import ft_progress
@@ -113,7 +112,6 @@ class MultilayerPerceptron:
                 raise Exception("The learning rate must be greater than 0")
 
             available_optimizers = {
-                "adagrad": AdaGrad,
                 "adam": Adam,
                 "sgd": StandardGradientDescent,
                 # Add more optimizers here
@@ -124,7 +122,6 @@ class MultilayerPerceptron:
                         learning_rate,
                         decay,
                         momentum,
-                        
                 )
             else:
                 raise Exception("Optimizer unavailable")
@@ -451,7 +448,25 @@ class MultilayerPerceptron:
             with open(path, "wb") as file:
                 pickle.dump(self, file)
         except Exception as error:
-            self.fatal_error(error)
+            self.fatal_error("MultilayerPerceptron.save_model", error)
+
+    def save_metrics(self, path):
+        try:
+            # Create a dataframe of the metrics computed during the training
+            # phase for the training and the validation sets
+            metrics_df = pandas.DataFrame(
+                self.training_metrics,
+                index=[f"epoch {i}" for i in range(1, self.epochs + 1)],
+            )
+            # Update the columns names to add the 'training ' prefix
+            print("Metrics history on training set:\n", metrics_df)
+            metrics_df = pandas.DataFrame(
+                self.validation_metrics,
+                index=[f"epoch {i}" for i in range(1, self.epochs + 1)],
+            )
+            print("Metrics history on validation set:\n", metrics_df)
+        except Exception as error:
+            self.fatal_error("MultilayerPerceptron.save_metrics", error)
 
     def load_model(self, path):
         try:

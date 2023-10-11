@@ -116,6 +116,7 @@ if __name__ == "__main__":
     )
 
     model.save_model("../model.pkl")
+    model.save_metrics("../metrics.csv")
 
     # ############### #
     # Test the model  #

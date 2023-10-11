@@ -2,4 +2,6 @@
 
 - [ ] MultilayerPerceptron :
     - [ ] __init__ : Check the type of the input parameters
+    - [ ] Metrics history
+    - [ ] Multiple training metrics on the same graph
     - [ ] The implementation of early stopping

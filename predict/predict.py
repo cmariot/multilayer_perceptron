@@ -120,13 +120,12 @@ if __name__ == "__main__":
 
     # Load the dataset
     x, y = load_dataset(predict_path)
+    # Convert the targets to a numpy array
+    y = np.where(y == "M", 0, 1)
 
     # Normalize the features of the dataset and convert it to a numpy array
     x_norm = (x - model.x_min) / (model.x_max - model.x_min)
     x_norm = x_norm.T.to_numpy()
-
-    # Convert the targets to a numpy array
-    y = np.where(y == "M", 0, 1)
 
     # Predict the dataset
     y_hat = model.predict(x_norm)

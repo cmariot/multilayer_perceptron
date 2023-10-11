@@ -10,11 +10,12 @@
 #                                                                             #
 # *************************************************************************** #
 
-import argparse
-import pickle
 import pandas
 import numpy as np
-import matplotlib.pyplot as plt
+
+from utils.parse_args import parse_arguments
+from utils.load_files import load_model, load_dataset
+from utils.plot import plot_confusion_matrix
 
 from multilayer_perceptron.MultilayerPerceptron import MultilayerPerceptron
 from multilayer_perceptron.Metrics.accuracy import accuracy_score_
@@ -40,89 +41,6 @@ def header():
 """)
 
 
-def parse_arguments():
-
-    try:
-        parser = argparse.ArgumentParser()
-
-        parser.add_argument(
-            "--predict_path",
-            type=str,
-            help="Path to the train dataset",
-            default="../datasets/validation.csv"
-        )
-
-        parser.add_argument(
-            "--model_path",
-            type=str,
-            help="Path to the trained Multilayer Perceptron model",
-            default="../model.pkl"
-        )
-
-        args = parser.parse_args()
-
-        return (
-            args.predict_path,
-            args.model_path
-        )
-
-    except Exception as error:
-        print(error)
-        exit()
-
-
-def load_model(path: str) -> object:
-    try:
-        with open(path, "rb") as file:
-            model = pickle.load(file)
-            return model
-    except Exception as error:
-        print(error)
-        exit()
-
-
-def load_dataset(path: str) -> object:
-    try:
-        dataset = pandas.read_csv(path)
-        x = dataset.drop("Diagnosis", axis=1)
-        y = dataset["Diagnosis"]
-        return x, y
-
-    except Exception as error:
-        print(error)
-        exit()
-
-
-def plot_confusion_matrix(cm, classes, title, cmap=plt.cm.Blues):
-    """
-    This function prints and plots the confusion matrix.
-    """
-    plt.figure()
-    plt.imshow(cm, interpolation="nearest", cmap=cmap)
-    plt.title(title)
-    plt.colorbar()
-    tick_marks = np.arange(len(classes))
-    plt.xticks(tick_marks, classes, rotation=45, ha="right")
-    plt.yticks(tick_marks, classes)
-    # Put the values inside the confusion matrix
-    for i in range(cm.shape[0]):
-        for j in range(cm.shape[1]):
-            # Put the values inside the confusion matrix
-            value = cm.iloc[i, j]
-            plt.text(
-                j,
-                i,
-                format(cm.iloc[i, j], "d"),
-                ha="center",
-                va="center",
-                color="white" if value > 100 else "black"
-            )
-    plt.tight_layout()
-    plt.ylabel("True label")
-    plt.xlabel("Predicted label")
-    plt.show()
-
-
 if __name__ == "__main__":
 
     header()
@@ -138,8 +56,6 @@ if __name__ == "__main__":
 
     # Load the dataset
     x, y = load_dataset(predict_path)
-    # Convert the targets to a numpy array
-    y = np.where(y == "M", 0, 1)
 
     # Normalize the features of the dataset and convert it to a numpy array
     x_norm = (x - model.x_min) / (model.x_max - model.x_min)

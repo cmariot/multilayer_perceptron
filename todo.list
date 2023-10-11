@@ -1,7 +1,0 @@
-# TODO:
-
-- [ ] MultilayerPerceptron :
-    - [X] Metrics history
-    - [X] Multiple training metrics on the same graph
-    - [X] __init__ : Check the type of the input parameters
-    - [X] The implementation of early stopping

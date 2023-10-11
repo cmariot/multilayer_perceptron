@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/11 15:46:33 by cmariot           #+#    #+#              #
-#    Updated: 2023/10/11 15:46:34 by cmariot          ###   ########.fr        #
+#    Updated: 2023/10/11 16:00:07 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -65,4 +65,3 @@ def append_column_names(dataset, columns):
         return dataset.drop("ID number", axis=1)
     except Exception as error:
         fatal_error(error)
-

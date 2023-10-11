@@ -11,28 +11,14 @@
 # *************************************************************************** #
 
 
-from multilayer_perceptron.MultilayerPerceptron import MultilayerPerceptron
+from multilayer_perceptron.header import header
 from utils.parse_arguments import parse_arguments
 from utils.get_datasets import (get_training_data, get_validation_data)
+from multilayer_perceptron.MultilayerPerceptron import MultilayerPerceptron
 from utils.plots import (
     print_metrics, plot_loss, plot_metrics, plot_loss_and_metrics
 )
 
-
-def header():
-    print("""
-              _ _   _     __
-  /\\/\\  _   _| | |_(_)   / /  __ _ _   _  ___ _ __
- /    \\| | | | | __| |  / /  / _` | | | |/ _ \\ '__|
-/ /\\/\\ \\ |_| | | |_| | / /__| (_| | |_| |  __/ |
-\\/    \\/\\__,_|_|\\__|_| \\____/\\__,_|\\__, |\\___|_|
-   ___                        _    |___/
-  / _ \\___ _ __ ___ ___ _ __ | |_ _ __ ___  _ __
- / /_)/ _ \\ '__/ __/ _ \\ '_ \\| __| '__/ _ \\| '_ \\
-/ ___/  __/ | | (_|  __/ |_) | |_| | | (_) | | | |
-\\/    \\___|_|  \\___\\___| .__/ \\__|_|  \\___/|_| |_|
-                       |_|
-""")
 
 
 if __name__ == "__main__":

@@ -17,6 +17,7 @@ from utils.parse_args import parse_arguments
 from utils.load_files import load_model, load_dataset
 from utils.plot import plot_confusion_matrix
 
+from multilayer_perceptron.header import header
 from multilayer_perceptron.MultilayerPerceptron import MultilayerPerceptron
 from multilayer_perceptron.Metrics.accuracy import accuracy_score_
 from multilayer_perceptron.Metrics.precision import precision_score_
@@ -25,26 +26,10 @@ from multilayer_perceptron.Metrics.f1_score import f1_score_
 from multilayer_perceptron.Metrics.confusion_matrix import confusion_matrix_
 
 
-def header():
-    print("""
-              _ _   _     __
-  /\\/\\  _   _| | |_(_)   / /  __ _ _   _  ___ _ __
- /    \\| | | | | __| |  / /  / _` | | | |/ _ \\ '__|
-/ /\\/\\ \\ |_| | | |_| | / /__| (_| | |_| |  __/ |
-\\/    \\/\\__,_|_|\\__|_| \\____/\\__,_|\\__, |\\___|_|
-   ___                        _    |___/
-  / _ \\___ _ __ ___ ___ _ __ | |_ _ __ ___  _ __
- / /_)/ _ \\ '__/ __/ _ \\ '_ \\| __| '__/ _ \\| '_ \\
-/ ___/  __/ | | (_|  __/ |_) | |_| | | (_) | | | |
-\\/    \\___|_|  \\___\\___| .__/ \\__|_|  \\___/|_| |_|
-                       |_|
-""")
-
-
 if __name__ == "__main__":
 
     header()
-    
+
     # Parse command line arguments
     (
         predict_path,  # Path to the prediction dataset

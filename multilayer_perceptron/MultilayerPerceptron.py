@@ -14,7 +14,7 @@ import numpy as np
 import pandas
 import pickle
 
-from multilayer_perceptron.layer import Layer
+from multilayer_perceptron.Layer import Layer
 
 from multilayer_perceptron.Loss.binary_cross_entropy \
         import BinaryCrossEntropy_Loss
@@ -56,6 +56,7 @@ class MultilayerPerceptron:
         train_set_shape: tuple,  # Shape of the training dataset
         epochs: int,             # Number of epochs
         batch_size: int,         # Batch size
+        early_stopping: int,     # Nb epochs without improvement before stopping
         x_min: list,             # Min values of the features
         x_max: list,             # Max values of the features
     ):
@@ -110,6 +111,10 @@ class MultilayerPerceptron:
 
             if learning_rate < 0:
                 raise Exception("The learning rate must be greater than 0")
+            elif decay and decay < 0:
+                raise Exception("The decay must be greater than 0")
+            elif momentum and momentum < 0:
+                raise Exception("The momentum must be greater than 0")
 
             available_optimizers = {
                 "adam": Adam,
@@ -135,9 +140,17 @@ class MultilayerPerceptron:
             self.n_samples = n_samples
 
             if batch_size < 1:
-                raise Exception("The batch size must be greater than 0")
+                raise Exception(
+                    "The batch size must be greater than 0"
+                )
+            elif batch_size > n_samples:
+                raise Exception(
+                    "The batch size must be smaller than the number of samples"
+                )
             elif epochs < 1:
-                raise Exception("The number of epochs must be greater than 0")
+                raise Exception(
+                    "The number of epochs must be greater than 0"
+                )
 
             # The number of batches is the number of times the model will be
             # updated during one epoch
@@ -163,6 +176,18 @@ class MultilayerPerceptron:
 
             self.training_metrics = self.metrics_dictionary()
             self.validation_metrics = self.metrics_dictionary()
+
+            self.last_loss = None
+            if early_stopping is None:
+                self.check_overfitting = False
+            else:
+                self.check_overfitting = True
+                if early_stopping < 1:
+                    raise Exception(
+                        "The number of epochs without improvement must be " +
+                        "greater than 0"
+                    )
+                self.early_stopping = early_stopping
 
             # *************************************************************** #
             # Print the model architecture                                    #
@@ -194,6 +219,27 @@ class MultilayerPerceptron:
     # ️ Multilayer Perceptron fit :                                           #
     #                                                                        #
     # ********************************************************************** #
+
+    def overfitting_detected(self, epoch):
+
+        # If the model is overfitting, stop the training
+        # (early stopping)
+
+        if not self.check_overfitting:
+            return False
+
+        if epoch % self.early_stopping == 0:
+
+            current_loss = self.validation_metrics["loss"][-1]
+
+            # If the loss is not decreasing, stop the training
+            if self.last_loss is not None and current_loss >= self.last_loss:
+                return True
+
+            self.last_loss = current_loss
+
+        return False
+
 
     def fit(
         self,
@@ -227,6 +273,10 @@ class MultilayerPerceptron:
                         x_validation_norm, y_validation,
                         self.validation_metrics
                 )
+
+                if self.overfitting_detected(epoch):
+                    print("\nOverfitting detected, training stopped\n")
+                    break
 
                 for batch in range(self.n_batch):
 
@@ -454,17 +504,36 @@ class MultilayerPerceptron:
         try:
             # Create a dataframe of the metrics computed during the training
             # phase for the training and the validation sets
-            metrics_df = pandas.DataFrame(
+            # (Concatenate the 2 dictionaries in the Axis 1 in one dataframe)
+
+            nb_metrics = len(self.training_metrics["loss"])
+            
+            train_metrics_df = pandas.DataFrame(
                 self.training_metrics,
-                index=[f"epoch {i}" for i in range(1, self.epochs + 1)],
+                index=[f"epoch {i}" for i in range(1, nb_metrics + 1)],
             )
             # Update the columns names to add the 'training ' prefix
-            print("Metrics history on training set:\n", metrics_df)
-            metrics_df = pandas.DataFrame(
+            train_metrics_df.columns = [
+                f"training {column}" for column in train_metrics_df.columns
+            ]
+
+            val_metrics_df = pandas.DataFrame(
                 self.validation_metrics,
-                index=[f"epoch {i}" for i in range(1, self.epochs + 1)],
+                index=[f"epoch {i}" for i in range(1, nb_metrics + 1)],
             )
-            print("Metrics history on validation set:\n", metrics_df)
+            # Update the columns names to add the 'validation ' prefix
+            val_metrics_df.columns = [
+                f"validation {column}" for column in val_metrics_df.columns
+            ]
+
+            # Concatenate the 2 dataframes in the Axis 1 in one dataframe
+            metrics_df = pandas.concat(
+                [train_metrics_df, val_metrics_df], axis=1
+            )
+            print("\nMetrics history:\n", metrics_df, "\n")
+
+            metrics_df.to_csv(path)
+
         except Exception as error:
             self.fatal_error("MultilayerPerceptron.save_metrics", error)
 

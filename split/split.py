@@ -16,12 +16,7 @@ import matplotlib.pyplot as plt
 
 INPUT_PATH = "../datasets/data.csv"
 OUTPUT_PATH = "../datasets"
-SPLIT_RATIO = 0.8
-
-
-def fatal_error(error_message):
-    print("Error:", error_message)
-    exit()
+SPLIT_RATIO = 0.80
 
 
 def load_dataset(path):
@@ -167,7 +162,29 @@ def save_dataset(dataset_df: pandas.DataFrame, new_path: str):
         fatal_error(error)
 
 
+def fatal_error(error_message):
+    print("Error:", error_message)
+    exit()
+
+
+def header():
+    print("""
+              _ _   _     __
+  /\\/\\  _   _| | |_(_)   / /  __ _ _   _  ___ _ __
+ /    \\| | | | | __| |  / /  / _` | | | |/ _ \\ '__|
+/ /\\/\\ \\ |_| | | |_| | / /__| (_| | |_| |  __/ |
+\\/    \\/\\__,_|_|\\__|_| \\____/\\__,_|\\__, |\\___|_|
+   ___                        _    |___/
+  / _ \\___ _ __ ___ ___ _ __ | |_ _ __ ___  _ __
+ / /_)/ _ \\ '__/ __/ _ \\ '_ \\| __| '__/ _ \\| '_ \\
+/ ___/  __/ | | (_|  __/ |_) | |_| | | (_) | | | |
+\\/    \\___|_|  \\___\\___| .__/ \\__|_|  \\___/|_| |_|
+                       |_|
+""")
+
 if __name__ == "__main__":
+
+    header()
 
     # Load the original dataset.
     dataset = load_dataset(INPUT_PATH)

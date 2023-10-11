@@ -96,6 +96,13 @@ def parse_arguments():
             default=None
         )
 
+        parser.add_argument(
+            "--early_stopping",
+            type=int,
+            help="Number of epochs without improvement before stopping",
+            default=None
+        )
+
         args = parser.parse_args()
 
         return (
@@ -109,7 +116,8 @@ def parse_arguments():
             args.batch_size,
             args.learning_rate,
             args.decay,
-            args.momentum
+            args.momentum,
+            args.early_stopping
         )
 
     except Exception as error:

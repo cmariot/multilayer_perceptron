@@ -50,7 +50,8 @@ if __name__ == "__main__":
         batch_size,       # Batch size
         learning_rate,    # Initial learning rate
         decay,            # Decay
-        momentum          # Momentum
+        momentum,         # Momentum
+        early_stopping    # Number of epochs without improvement before stopping
     ) = parse_arguments()
 
     # ########################################################### #
@@ -97,6 +98,7 @@ if __name__ == "__main__":
         epochs=epochs,
         batch_size=batch_size,
         train_set_shape=x_train_norm.shape,
+        early_stopping=early_stopping,
         x_min=x_min,
         x_max=x_max,
     )

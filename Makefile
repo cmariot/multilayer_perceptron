@@ -25,6 +25,7 @@ predict:
 
 clean:
 	rm -rf model.pkl
+	rm -rf metrics.csv
 	rm -rf */*/__pycache__
 	rm -rf datasets/train.csv
 	rm -rf datasets/validation.csv

@@ -28,7 +28,7 @@ class Layer:
     ):
 
         # Seed init
-        np.random.seed(42)
+        # np.random.seed(42)
 
         # Weights and dweights init
         self.weights = np.random.randn(n_neurons, n_inputs)

@@ -68,8 +68,14 @@ def plot_metrics(training_metrics, validation_metrics):
     try:
         # Create a figure with 4 subplots
         fig, axs = plt.subplots(2, 2, figsize=(15, 9))
+        descriptions = {
+            "accuracy": "Accuracy (correctly classified / number of instances)",
+            "precision": "Precision (increase when the number of false positives decreases)",
+            "recall": "Recall (increases when the number of false negatives decreases)",
+            "f1_score": "F1 score (harmonic mean of precision and recall))"
+        }
         for metric, ax in zip(training_metrics, axs.flat):
-            ax.set_title(metric)
+            ax.set_title(descriptions[metric])
             ax.plot(training_metrics[metric], label="Training")
             ax.plot(validation_metrics[metric], label="Validation")
             ax.legend()
@@ -90,45 +96,50 @@ def plot_loss_and_metrics(training_metrics, validation_metrics):
     """
     try:
         fig = plt.figure(figsize=(15, 9))
-        fig.suptitle("Loss and accuracy evolution computed during training")
+        fig.suptitle("Loss and metrics evolution computed during training")
+
+        # Plot the metrics on the right y-axis
+        ax1 = fig.add_subplot(111)
+        ax1.set_ylabel("Y Metrics")
+
+        colors = ["tab:orange", "tab:green", "tab:red", "tab:purple"]
+        for metric, color in zip(training_metrics, colors):
+            ax1.plot(
+                training_metrics[metric],
+                label=f"Training {metric}",
+                color=color
+            )
+            ax1.plot(
+                validation_metrics[metric],
+                label=f"Validation {metric}",
+                color=color,
+                linestyle="dotted"
+            )
+
+        ax1.set_ylim([0, 1.1])
+
+        ax2 = ax1.twinx()
 
         # Plot the loss on the left y-axis
-        ax1 = fig.add_subplot(111)
-        ax1.set_xlabel("Epochs")
-        ax1.set_ylabel("Loss", color="tab:blue")
-        ax1.plot(
+        ax2.set_xlabel("Epochs")
+        ax2.set_ylabel("Y Loss", color="tab:blue")
+        ax2.plot(
             training_metrics["loss"],
             label="Training loss",
             color="tab:blue"
         )
-        ax1.plot(
+        ax2.plot(
             validation_metrics["loss"],
             label="Validation loss",
             color="tab:blue",
             linestyle="dotted"
         )
-        for label in ax1.get_yticklabels():
+        for label in ax2.get_yticklabels():
             label.set_color("tab:blue")
 
-        # Plot the metrics on the right y-axis
-        ax2 = ax1.twinx()
-        ax2.set_ylabel("Accuracy", color="tab:orange")
-        ax2.plot(
-            training_metrics["accuracy"],
-            label="Training accuracy",
-            color="tab:orange"
-        )
-        ax2.plot(
-            validation_metrics["accuracy"],
-            label="Validation accuracy",
-            color="tab:orange",
-            linestyle="dotted"
-        )
-        for label in ax2.get_yticklabels():
-            label.set_color("tab:orange")
-
-        ax1.legend(loc="upper left")
-        ax2.legend(loc="lower left")
+        # Legend of ax1 is center right, a little bit on the left
+        ax1.legend(loc="center right")
+        ax2.legend(loc="center right", bbox_to_anchor=(0.80, 0.5))
 
         plt.show()
 

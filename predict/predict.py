@@ -24,6 +24,22 @@ from multilayer_perceptron.Metrics.f1_score import f1_score_
 from multilayer_perceptron.Metrics.confusion_matrix import confusion_matrix_
 
 
+def header():
+    print("""
+              _ _   _     __
+  /\\/\\  _   _| | |_(_)   / /  __ _ _   _  ___ _ __
+ /    \\| | | | | __| |  / /  / _` | | | |/ _ \\ '__|
+/ /\\/\\ \\ |_| | | |_| | / /__| (_| | |_| |  __/ |
+\\/    \\/\\__,_|_|\\__|_| \\____/\\__,_|\\__, |\\___|_|
+   ___                        _    |___/
+  / _ \\___ _ __ ___ ___ _ __ | |_ _ __ ___  _ __
+ / /_)/ _ \\ '__/ __/ _ \\ '_ \\| __| '__/ _ \\| '_ \\
+/ ___/  __/ | | (_|  __/ |_) | |_| | | (_) | | | |
+\\/    \\___|_|  \\___\\___| .__/ \\__|_|  \\___/|_| |_|
+                       |_|
+""")
+
+
 def parse_arguments():
 
     try:
@@ -109,6 +125,8 @@ def plot_confusion_matrix(cm, classes, title, cmap=plt.cm.Blues):
 
 if __name__ == "__main__":
 
+    header()
+    
     # Parse command line arguments
     (
         predict_path,  # Path to the prediction dataset

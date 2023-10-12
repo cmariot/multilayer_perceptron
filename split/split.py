@@ -21,12 +21,11 @@ from utils.plot import plot_histograms
 from utils.column_names import (get_column_names, append_column_names)
 
 
-INPUT_PATH = "../datasets/data.csv"
-OUTPUT_PATH = "../datasets"
-SPLIT_RATIO = 0.80
-
-
 if __name__ == "__main__":
+
+    INPUT_PATH = "../datasets/data.csv"
+    OUTPUT_PATH = "../datasets"
+    SPLIT_RATIO = 0.80
 
     header()
 

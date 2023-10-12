@@ -120,7 +120,7 @@ def get_validation_data(
                 for y in y_validation
             ]
         )
-        return x_validation_norm.T, y_validation.T
+        return x_validation, x_validation_norm.T, y_validation.T
 
     except Exception:
         print("Error: can't get the validation data.")

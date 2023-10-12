@@ -12,6 +12,7 @@
 
 import pandas
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def print_metrics(training_metrics, validation_metrics):
@@ -36,17 +37,22 @@ def print_metrics(training_metrics, validation_metrics):
                 validation_metrics["f1_score"][-1]
             ]
         }
-        print("\n",
-              pandas.DataFrame(
-                  metrics_dataframe,
-                  index=[
-                      "Loss",
-                      "Accuracy",
-                      "Recall",
-                      "Precision",
-                      "F1 score"
-                  ]).to_string()
-              )
+
+        print(
+            "\033[94m" +
+            "\nFinal metrics on the training and validation sets :\n" +
+            "\033[0m\n" +
+            pandas.DataFrame(
+                metrics_dataframe,
+                index=[
+                    "Loss",
+                    "Accuracy",
+                    "Recall",
+                    "Precision",
+                    "F1 score"
+                ]).to_string()
+            )
+
     except Exception as e:
         print(e)
         exit()
@@ -69,10 +75,14 @@ def plot_metrics(training_metrics, validation_metrics):
         # Create a figure with 4 subplots
         fig, axs = plt.subplots(2, 2, figsize=(15, 9))
         descriptions = {
-            "accuracy": "Accuracy (correctly classified / number of instances)",
-            "precision": "Precision (increase when the number of false positives decreases)",
-            "recall": "Recall (increases when the number of false negatives decreases)",
-            "f1_score": "F1 score (harmonic mean of precision and recall))"
+            "accuracy":
+                "Accuracy (correctly classified / number of instances)",
+            "precision":
+                "Precision (increase when nb of false positives decreases)",
+            "recall":
+                "Recall (increases when nb of false negatives decreases)",
+            "f1_score":
+                "F1 score (harmonic mean of precision and recall))"
         }
         for metric, ax in zip(training_metrics, axs.flat):
             ax.set_title(descriptions[metric])
@@ -140,6 +150,75 @@ def plot_loss_and_metrics(training_metrics, validation_metrics):
         # Legend of ax1 is center right, a little bit on the left
         ax1.legend(loc="center right")
         ax2.legend(loc="center right", bbox_to_anchor=(0.80, 0.5))
+
+        plt.show()
+
+    except Exception as e:
+        print(e)
+        exit()
+
+
+def plot_3d(x_validation, x_validation_norm, y_validation, model):
+
+    try:
+
+        plot_features = [
+            "Radius mean",
+            "Texture mean",
+            "Smoothness mean"
+        ]
+
+        y_hat = model.predict(x_validation_norm)
+        y_validation = np.argmax(y_validation, axis=0).reshape(-1, 1)
+
+        fig = plt.figure(figsize=(15, 9))
+        ax = fig.add_subplot(projection='3d')
+
+        colors = {
+            "true positive": "green",
+            "true negative": "blue",
+            "false positive": "red",
+            "false negative": "orange"
+        }
+
+        validation_colors = []
+        labels = []
+        for i in range(len(y_validation)):
+            if y_validation[i] == 0 and y_hat[i] == 0:
+                validation_colors.append(colors["true positive"])
+                labels.append("True positive")
+            elif y_validation[i] == 1 and y_hat[i] == 1:
+                validation_colors.append(colors["true negative"])
+                labels.append("True negative")
+            elif y_validation[i] == 0 and y_hat[i] == 1:
+                validation_colors.append(colors["false negative"])
+                labels.append("False negative")
+            elif y_validation[i] == 1 and y_hat[i] == 0:
+                validation_colors.append(colors["false positive"])
+                labels.append("False positive")
+
+        ax.scatter(
+            x_validation[plot_features[0]],
+            x_validation[plot_features[1]],
+            x_validation[plot_features[2]],
+            c=validation_colors,
+        )
+
+        # Title
+        ax.set_title(
+            "Tridimensional Insight: Mapping cellular target through " +
+            "three features with colorful predictions"
+        )
+
+        # Axis labels
+        ax.set_xlabel(plot_features[0])
+        ax.set_ylabel(plot_features[1])
+        ax.set_zlabel(plot_features[2])
+
+        # Add a legend
+        for key, value in colors.items():
+            ax.scatter([], [], [], c=value, label=key)
+        ax.legend()
 
         plt.show()
 

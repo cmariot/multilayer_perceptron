@@ -56,7 +56,7 @@ class MultilayerPerceptron:
         train_set_shape: tuple,  # Shape of the training dataset
         epochs: int,             # Number of epochs
         batch_size: int,         # Batch size
-        early_stopping: int,     # Nb epochs without improvement before stopping
+        early_stopping: int,     # Nb epochs without improvement before stop
         x_min: list,             # Min values of the features
         x_max: list,             # Max values of the features
     ):
@@ -209,6 +209,7 @@ class MultilayerPerceptron:
                     }
                 )
             df = pandas.DataFrame(layers_df).T.to_string(header=False)
+            print("\033[94m" + "Neural network architecture :" + "\033[0m")
             print(f"\n{df}\n")
 
         except Exception as error:
@@ -239,7 +240,6 @@ class MultilayerPerceptron:
             self.last_loss = current_loss
 
         return False
-
 
     def fit(
         self,
@@ -287,6 +287,8 @@ class MultilayerPerceptron:
                     self.optimize()
 
                 self.optimizer.update_learning_rate()
+
+            print("\033[94m" + "\nTraining completed\n\n" + "\033[0m")
 
         except Exception as error:
             self.fatal_error("MultilayerPerceptron.fit", error)
@@ -507,7 +509,7 @@ class MultilayerPerceptron:
             # (Concatenate the 2 dictionaries in the Axis 1 in one dataframe)
 
             nb_metrics = len(self.training_metrics["loss"])
-            
+
             train_metrics_df = pandas.DataFrame(
                 self.training_metrics,
                 index=[f"epoch {i}" for i in range(1, nb_metrics + 1)],
@@ -530,7 +532,9 @@ class MultilayerPerceptron:
             metrics_df = pandas.concat(
                 [train_metrics_df, val_metrics_df], axis=1
             )
-            print("\nMetrics history:\n", metrics_df, "\n")
+
+            print("\033[94m" + "History of the metrics :" + "\033[0m")
+            print("\n", metrics_df, "\n")
 
             metrics_df.to_csv(path)
 

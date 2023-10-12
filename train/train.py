@@ -16,9 +16,8 @@ from utils.parse_arguments import parse_arguments
 from utils.get_datasets import (get_training_data, get_validation_data)
 from multilayer_perceptron.MultilayerPerceptron import MultilayerPerceptron
 from utils.plots import (
-    print_metrics, plot_loss, plot_metrics, plot_loss_and_metrics
+    print_metrics, plot_loss, plot_metrics, plot_loss_and_metrics, plot_3d
 )
-
 
 
 if __name__ == "__main__":
@@ -37,7 +36,7 @@ if __name__ == "__main__":
         learning_rate,    # Initial learning rate
         decay,            # Decay
         momentum,         # Momentum
-        early_stopping    # Number of epochs without improvement before stopping
+        early_stopping    # Nb of epochs without improvement before stopping
     ) = parse_arguments()
 
     # ########################################################### #
@@ -60,6 +59,7 @@ if __name__ == "__main__":
     ) = get_training_data(train_path)
 
     (
+        x_validation,
         x_validation_norm,
         y_validation
     ) = get_validation_data(validation_path, x_min, x_max)
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     # Train the model #
     # ############### #
 
-    input("Press Enter to start training the model ...\n")
+    input("\033[94m" + "\nPress Enter to train the model ...\n" + "\033[0m")
 
     model.fit(
         training_set,
@@ -116,6 +116,9 @@ if __name__ == "__main__":
     # Plot the loss of the training and validation sets on the same graph
     plot_loss(model.training_metrics, model.validation_metrics)
 
+    # 3d plot of the validation set, two first features and the target
+    plot_3d(x_validation, x_validation_norm, y_validation, model)
+
     # Plot the accuracy, the precision, the recall and the f1-score of
     # the training and validation sets
     plot_metrics(model.training_metrics, model.validation_metrics)
@@ -123,40 +126,3 @@ if __name__ == "__main__":
     # Plot the loss and the metrics of the training and validation sets on the
     # same graph
     plot_loss_and_metrics(model.training_metrics, model.validation_metrics)
-
-    # 3d plot of the validation set, two first features and the target
-    import matplotlib.pyplot as plt
-    import numpy as np
-
-    y_hat = model.predict(x_validation_norm)
-    y_validation = np.argmax(y_validation, axis=0).reshape(-1, 1)
-
-    fig = plt.figure()
-    ax = fig.add_subplot(projection='3d')
-
-    colors = {
-        "true positive": "green",
-        "true negative": "red",
-        "false positive": "blue",
-        "false negative": "yellow"
-    }
-    validation_colors = []
-    print(y_validation.shape)
-    for i in range(len(y_validation)):
-        if y_validation[i] == 0 and y_hat[i] == 0:
-            validation_colors.append(colors["true positive"])
-        elif y_validation[i] == 1 and y_hat[i] == 1:
-            validation_colors.append(colors["true negative"])
-        elif y_validation[i] == 0 and y_hat[i] == 1:
-            validation_colors.append(colors["false negative"])
-        elif y_validation[i] == 1 and y_hat[i] == 0:
-            validation_colors.append(colors["false positive"])
-
-    ax.scatter(
-        x_validation_norm[2],
-        x_validation_norm[4],
-        x_validation_norm[5],
-        c=validation_colors
-    )
-
-    plt.show()

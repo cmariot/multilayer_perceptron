@@ -10,20 +10,13 @@
 #                                                                             #
 # *************************************************************************** #
 
-import pandas
-import numpy as np
-
+from multilayer_perceptron.header import header
 from utils.parse_args import parse_arguments
-from utils.load_files import load_model, load_dataset
+from utils.load_files import load_model, load_dataset, save_predictions
+from utils.metrics import print_metrics
 from utils.plot import plot_confusion_matrix
 
-from multilayer_perceptron.header import header
 from multilayer_perceptron.MultilayerPerceptron import MultilayerPerceptron
-from multilayer_perceptron.Metrics.accuracy import accuracy_score_
-from multilayer_perceptron.Metrics.precision import precision_score_
-from multilayer_perceptron.Metrics.recall import recall_score_
-from multilayer_perceptron.Metrics.f1_score import f1_score_
-from multilayer_perceptron.Metrics.confusion_matrix import confusion_matrix_
 
 
 if __name__ == "__main__":
@@ -38,37 +31,22 @@ if __name__ == "__main__":
 
     # Load the model
     model: MultilayerPerceptron = load_model(model_path)
+    x_min = model.x_min
+    x_max = model.x_max
 
-    # Load the dataset
-    x, y = load_dataset(predict_path)
+    # Load the dataset and normalize the features
+    x, x_norm, y = load_dataset(predict_path, x_min, x_max)
 
-    # Normalize the features of the dataset and convert it to a numpy array
-    x_norm = (x - model.x_min) / (model.x_max - model.x_min)
-    x_norm = x_norm.T.to_numpy()
-
-    # Predict the dataset
+    # Predict the classes on the test set
     y_hat = model.predict(x_norm)
 
-    df = pandas.DataFrame(
-        {
-            "Binary cross entropy loss": model.loss.calculate(y_hat, y),
-            "Accuracy": accuracy_score_(y, y_hat),
-            "Recall": recall_score_(y, y_hat),
-            "Precision": precision_score_(y, y_hat),
-            "F1": f1_score_(y, y_hat)
-        },
-        index=["Test set"]
-    )
-    print(df.T, "\n")
+    if y is not None:
 
-    # Plot the confusion matrix on the validation set
-    plot_confusion_matrix(
-        confusion_matrix_(y, y_hat, df_option=True),
-        classes=["Malignant", "Benign"],
-        title="Confusion matrix on the training set"
-    )
+        # Print the metrics computed on the test set
+        print_metrics(y, y_hat, model)
+
+        # Plot the confusion matrix on the test set
+        plot_confusion_matrix(y, y_hat)
 
     # Save the predictions in a csv file
-    y_pred = np.where(y_hat == 0, "M", "B")
-    y_pred = pandas.DataFrame(y_pred, columns=["Diagnosis"])
-    y_pred.to_csv("../datasets/predictions.csv", index=False)
+    save_predictions(y_hat, "../datasets/predictions.csv")

@@ -1,14 +1,14 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    datasets.py                                        :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/10/11 15:46:37 by cmariot           #+#    #+#              #
-#    Updated: 2023/10/11 15:46:38 by cmariot          ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+# *************************************************************************** #
+#                                                                             #
+#                                                        :::      ::::::::    #
+#    datasets.py                                       :+:      :+:    :+:    #
+#                                                    +:+ +:+         +:+      #
+#    By: cmariot <cmariot@student.42.fr>           +#+  +:+       +#+         #
+#                                                +#+#+#+#+#+   +#+            #
+#    Created: 2023/10/11 15:46:37 by cmariot          #+#    #+#              #
+#    Updated: 2023/10/11 15:46:38 by cmariot         ###   ########.fr        #
+#                                                                             #
+# *************************************************************************** #
 
 from utils.fatal_error import fatal_error
 import pandas
@@ -29,9 +29,9 @@ def load_dataset(path):
 
 def print_dataset_info(dataset):
     try:
-        print("Dataset informations:")
+        print("\033[94m" + "Original dataset description:\n" + "\033[0m")
         print(dataset.head(), "\n")
-        print(dataset.describe(include="all"))
+        print(dataset.describe())
     except Exception as error:
         fatal_error(error)
 
@@ -62,8 +62,8 @@ def split_dataset(dataset, train_percentage):
 
         print("\nDataset splitted into train and validation sets",
               f"with a {train_percentage} ratio :")
-        print(f"- Train set: {len(train)} samples.")
-        print(f"- Validation set: {len(validation)} samples.\n")
+        print(f"- Train set: \033[94m{len(train)}\033[0m samples.")
+        print(f"- Validation set: \033[94m{len(validation)}\033[0m samples.\n")
 
         return train, validation
 
@@ -74,6 +74,6 @@ def split_dataset(dataset, train_percentage):
 def save_dataset(dataset_df: pandas.DataFrame, new_path: str):
     try:
         dataset_df.to_csv(new_path, index=False)
-        print(f"Dataset saved as {new_path}")
+        print(f"Dataset saved as \033[94m{new_path}\033[0m")
     except Exception as error:
         fatal_error(error)

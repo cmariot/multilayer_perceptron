@@ -23,6 +23,9 @@ train:
 predict:
 	@(cd predict ; $(PYTHON) predict.py)
 
+train_bonus:
+	@(cd train ; $(PYTHON) train.py --optimizer adam --early_stopping 200)
+
 clean:
 	rm -rf model.pkl
 	rm -rf metrics.csv

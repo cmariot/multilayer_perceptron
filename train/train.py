@@ -123,3 +123,40 @@ if __name__ == "__main__":
     # Plot the loss and the metrics of the training and validation sets on the
     # same graph
     plot_loss_and_metrics(model.training_metrics, model.validation_metrics)
+
+    # 3d plot of the validation set, two first features and the target
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    y_hat = model.predict(x_validation_norm)
+    y_validation = np.argmax(y_validation, axis=0).reshape(-1, 1)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(projection='3d')
+
+    colors = {
+        "true positive": "green",
+        "true negative": "red",
+        "false positive": "blue",
+        "false negative": "yellow"
+    }
+    validation_colors = []
+    print(y_validation.shape)
+    for i in range(len(y_validation)):
+        if y_validation[i] == 0 and y_hat[i] == 0:
+            validation_colors.append(colors["true positive"])
+        elif y_validation[i] == 1 and y_hat[i] == 1:
+            validation_colors.append(colors["true negative"])
+        elif y_validation[i] == 0 and y_hat[i] == 1:
+            validation_colors.append(colors["false negative"])
+        elif y_validation[i] == 1 and y_hat[i] == 0:
+            validation_colors.append(colors["false positive"])
+
+    ax.scatter(
+        x_validation_norm[2],
+        x_validation_norm[4],
+        x_validation_norm[5],
+        c=validation_colors
+    )
+
+    plt.show()

@@ -24,7 +24,7 @@ predict:
 	@(cd predict ; $(PYTHON) predict.py)
 
 train_bonus:
-	@(cd train ; $(PYTHON) train.py --optimizer adam --early_stopping 200)
+	@(cd train ; $(PYTHON) train.py --optimizer adam --early_stopping 100)
 
 clean:
 	rm -rf model.pkl
@@ -34,4 +34,4 @@ clean:
 	rm -rf datasets/validation.csv
 	rm -rf datasets/predictions.csv
 
-.PHONY: all split train predict clean
+.PHONY: all split train train_bonus predict clean

@@ -19,10 +19,16 @@ def load_dataset(path):
     Load the dataset from a csv file path and return a pandas dataframe.
     """
     try:
-        dataset = pandas.read_csv(path)
+        dataset = pandas.read_csv(path, header=None)
+        if dataset.shape[0] < 2:
+            fatal_error("The dataset must contains at least two samples.")
         print(f"Dataset {path} successfully loaded.",
               f"\nOriginal dataset contains {len(dataset)} samples.\n")
         return dataset
+    except FileNotFoundError:
+        fatal_error(f"File not found, {path} does not exist.")
+    except pandas.errors.EmptyDataError:
+        fatal_error(f"File {path} is empty.")
     except Exception as error:
         fatal_error(error)
 

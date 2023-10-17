@@ -22,10 +22,7 @@ class SoftmaxActivation:
     """
 
     def forward(self, layer_output):
-        exp_values = np.exp(
-            layer_output -
-            np.max(layer_output, axis=1, keepdims=True)
-        )
+        exp_values = np.exp(layer_output)
         self.output = exp_values / np.sum(exp_values, axis=1, keepdims=True)
         return self.output
 
